@@ -9,4 +9,6 @@ const updFunc = (eng)=>{
 
 const engine = new Engine(startFunc, updFunc, document.querySelector('#gameCanvas'));
 
+window.engine = engine;
+
 engine.start();

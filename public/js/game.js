@@ -12,11 +12,5 @@ class Game{
 		this.getFileManager = ()=>{
 			return this.fileManager;
 		}
-
-		this.moveEntity = (entity)=>{
-			if(entity instanceof Entity){
-
-			}
-		}
 	}
 }
