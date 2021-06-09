@@ -1,7 +1,7 @@
 class Client{
 	constructor(name, game){
 
-		const socket = io();
+		this.socket = io();
 
 		this.player; // needs to be set in this.start() function
 		this.nonPlayerEntities = {};
@@ -11,7 +11,8 @@ class Client{
 		}
 
 		this.sendMoveData = (data)=>{
-
+			console.log(data)
+			this.socket.emit('moveRequest', data);
 		}
 
 		this.handleData = (data)=>{
