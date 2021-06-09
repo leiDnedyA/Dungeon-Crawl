@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Aydab's Dungeon Crawl</title>
+</head>
+<body>
+
+	<canvas id="gameCanvas"></canvas>
+
+	<script src="/socket.io/socket.io.js"></script>
+	<script type="text/javascript">
+		
+		let scriptList = ['aydab_math', 'game_object', 'engine', 'character_controller', 'client', 'game', 'file_manager', 'renderer', 'main'];
+
+		for(let i in scriptList){
+			let script = document.createElement('script');
+			script.setAttribute('type', 'text/javascript');
+			script.setAttribute('src', `./js/${scriptList[i]}.js`);
+			document.body.appendChild(script);
+		}
+
+	</script>
+
+</body>
+</html>
