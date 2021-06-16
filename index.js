@@ -28,15 +28,20 @@ io.on('connection', (socket)=>{
 	clientList[player.id] = player;
 	playerList[player.id] = player;
 	player.start();
-	socket.emit('playerSetup', {
-		id : player.id,
-		position : player.position
-	})
+	
+	emitConnection(player, clientList);
+	emitPlayerSetup(player, playerList);
+
+	// console.log(clientList);
+
 	socket.on('disconnect', ()=>{
-		console.log('user disconnected');
+		console.log(`user disconnected at IP: ${socket.handshake.address}`);
 		playerList[player.id].end();
 		delete playerList[player.id];
 		delete clientList[player.id];
+		
+		emitDisconnection(player, clientList);
+
 	});
 })
 
@@ -90,4 +95,29 @@ class Vector2 {
 		this.x = x;
 		this.y = y;
 	}
+}
+
+//helper functions for server
+const emitConnection = (player, clients)=>{
+	for(let i in clients){
+		clients[i].socket.emit('playerConnect', {id: player.id, position: player.position});
+	}
+}
+
+const emitDisconnection = (player, clients)=>{
+	for(let i in clients){
+		clients[i].socket.emit('playerDisconnect', {id: player.id});
+	}
+}
+
+const emitPlayerSetup = (player, players)=>{
+	let data = {entities : {}, player : {}};
+	for(let i in players){
+		if(players[i] != player){
+			data.entities[i] = {id: i, position: [players[i].position.x, players[i].position.y]};
+		}
+	}
+	data.player = {id: player.id, position: [player.position.x, player.position.y]}
+
+	player.socket.emit('playerSetup', data);
 }

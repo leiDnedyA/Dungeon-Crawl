@@ -24,7 +24,7 @@ class Renderer{
 
 		this.drawObject = (gameObject)=>{
 			// console.log('drawing')
-			console.log(gameObject);
+			// console.log(gameObject);
 			this.ctx.fillStyle = gameObject.color;
 			this.ctx.fillRect(gameObject.position.x, gameObject.position.y, gameObject.size.x, gameObject.size.y);
 		}
