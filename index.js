@@ -6,11 +6,14 @@ const socket = require('socket.io');
 const io = new socket.Server(server)
 const CharController = require('./js/backend_character_controller.js')
 const Engine = require('./js/engine.js')
+const RoomLoader = require('./js/room_loader.js')
+const levelJSON = require('./levels/test_level.json')
 
 //config variables
-const frameRate = 20;
+const frameRate = 40;
 const port = 80;
 const engine = new Engine(frameRate);
+const roomLoader = new RoomLoader(levelJSON);
 engine.start();
 
 //player and client lists
@@ -20,22 +23,35 @@ var playerList = {}
 //express server setup
 app.use(express.static('public'));
 app.use(express.static(__dirname + '/node_modules'));  
+app.use(express.static('assets'));
 
 //socket server setup
 io.on('connection', (socket)=>{
-	console.log(`user connected at IP: ${socket.handshake.address}`);
-	let player = new Player(socket, engine, new Vector2(0, 0));
+	// console.log(`user connected at IP: ${socket.handshake.address}`);
+	let startRoom = roomLoader.getStart();
+	let player = new Player(socket, engine, getStartCords(startRoom));
+	console.log(player.position)
+	player.ip = socket.handshake.address;
 	clientList[player.id] = player;
 	playerList[player.id] = player;
+	player.room = startRoom;
+
+	// player.position = new Vector2()
 	player.start();
 	
-	emitConnection(player, clientList);
-	emitPlayerSetup(player, playerList);
+	socket.on('start', (data)=>{
+		player.name = data.name;		
+		console.log(`${data.name} has joined the world (IP: ${player.ip})`)
+		emitConnection(player, clientList);
+		emitPlayerSetup(player, playerList);
+		emitRoom(player);
+
+	})
 
 	// console.log(clientList);
 
 	socket.on('disconnect', ()=>{
-		console.log(`user disconnected at IP: ${socket.handshake.address}`);
+		console.log(`user ${player.name} disconnected at IP: ${socket.handshake.address}`);
 		playerList[player.id].end();
 		delete playerList[player.id];
 		delete clientList[player.id];
@@ -100,7 +116,7 @@ class Vector2 {
 //helper functions for server
 const emitConnection = (player, clients)=>{
 	for(let i in clients){
-		clients[i].socket.emit('playerConnect', {id: player.id, position: player.position});
+		clients[i].socket.emit('playerConnect', {id: player.id, position: player.position, name: player.name});
 	}
 }
 
@@ -110,14 +126,39 @@ const emitDisconnection = (player, clients)=>{
 	}
 }
 
+const emitRoom = (player)=>{
+	let room = roomLoader.getRoom(player.room);
+	if(room != null){
+		player.socket.emit('roomChange', {
+			name : player.room,
+			background : room.background,
+			id: room.id,
+			doors: room.doors
+		})
+		console.log(`${player.name} has entered room: "${player.room}"`)
+	}
+}
+
 const emitPlayerSetup = (player, players)=>{
 	let data = {entities : {}, player : {}};
 	for(let i in players){
 		if(players[i] != player){
-			data.entities[i] = {id: i, position: [players[i].position.x, players[i].position.y]};
+			data.entities[i] = {name : players[i].name, id: i, position: [players[i].position.x, players[i].position.y]};
 		}
 	}
-	data.player = {id: player.id, position: [player.position.x, player.position.y]}
+	data.player = {name: player.name, id: player.id, position: [player.position.x, player.position.y]}
 
 	player.socket.emit('playerSetup', data);
+}
+
+//misc functions
+
+const stringToCords = (s)=>{
+	let cords = s.split(', ');
+	return new Vector2(cords[0], cords[1]);
+}
+
+const getStartCords = (roomName)=>{
+	let s = roomLoader.getRoom(roomName).startPos.split(', ').map(str=>parseInt(str));
+	return new Vector2(s[0], s[1])
 }

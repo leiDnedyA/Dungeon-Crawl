@@ -4,13 +4,17 @@
 	<title>Aydab's Dungeon Crawl</title>
 </head>
 <body>
+	<input type="text" name="username" id="nameInput" placeholder="username">
+	<button id="startButton">Connect</button>
+
+	<br>
 
 	<canvas id="gameCanvas"></canvas>
 
 	<script src="/socket.io/socket.io.js"></script>
 	<script type="text/javascript">
 		
-		let scriptList = ['aydab_math', 'game_object', 'engine', 'character_controller', 'client', 'game', 'file_manager', 'renderer', 'main'];
+		let scriptList = ['aydab_math', 'game_object', 'engine', 'character_controller', 'camera_controller', 'client', 'game', 'file_manager', 'renderer', 'main'];
 
 		for(let i in scriptList){
 			let script = document.createElement('script');

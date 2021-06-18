@@ -1,5 +1,5 @@
 //object literals for input handling
-const speed = 7;
+const speed = 7; // set back to 7 when done testing stuff
 const moveFactor = .01;
 const moveFuncs = {
 		'up': (player, engine)=>{

@@ -2,16 +2,18 @@ class Engine {
 	constructor(startFunc, updFunc, canvas, framerate = 30){
 		this.game = new Game();
 		this.renderer = new Renderer(canvas);
-		this.client = new Client('username', this.game);
-
+		this.client = new Client('username', this.game, this);
+		this.playerName = 'username';
+		this.player = this.game.gameObjects[this.client.id]
+		this.cameraController = new CameraController(this, this.renderer, this.player)
 		this.updateFuncs = [];
 
 		this.start = ()=>{
 			startFunc(this);
-			this.game.playerInit('aydab')
+			this.game.playerInit(this.playerName)
 			this.game.player.setEngine(this);
 			this.client.start(this.game.player);
-
+			this.cameraController.start();
 			this.addUpdFunc(()=>{
 				this.renderer.render(this.game.gameObjects);
 			});
@@ -43,6 +45,15 @@ class Engine {
 		let now = Date.now();
 		this.deltaTime = now - this.lastUpdate;
 		this.lastUpdate = now;
+	}
+
+	setPlayerName(name){
+		this.playerName = name;
+	}
+
+	setPlayer(player){
+		this.player = player;
+		this.cameraController.setPlayer(this.player);
 	}
 
 	getRenderer(){

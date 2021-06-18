@@ -1,4 +1,4 @@
-const defaultSize = 20;
+const defaultSize = 40;
 
 class GameObject {
 	constructor(position, size){
