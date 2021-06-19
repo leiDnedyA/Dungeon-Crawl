@@ -11,7 +11,7 @@ const levelJSON = require('./levels/test_level.json')
 const {Vector2} = require('./js/aydab_geometry.js')
 
 //config variables
-const frameRate = 40;
+const frameRate = 30;
 const port = 80;
 const engine = new Engine(frameRate);
 const roomLoader = new RoomLoader(levelJSON);
