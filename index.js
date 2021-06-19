@@ -8,6 +8,7 @@ const CharController = require('./js/backend_character_controller.js')
 const Engine = require('./js/engine.js')
 const RoomLoader = require('./js/room_loader.js')
 const levelJSON = require('./levels/test_level.json')
+const {Vector2} = require('./js/aydab_geometry.js')
 
 //config variables
 const frameRate = 40;
@@ -15,6 +16,7 @@ const port = 80;
 const engine = new Engine(frameRate);
 const roomLoader = new RoomLoader(levelJSON);
 engine.start();
+engine.roomLoader = roomLoader;
 
 //player and client lists
 var clientList = {}
@@ -106,12 +108,6 @@ class Player extends Client{
 	}
 }
 
-class Vector2 {
-	constructor(x, y){
-		this.x = x;
-		this.y = y;
-	}
-}
 
 //helper functions for server
 const emitConnection = (player, clients)=>{
@@ -159,6 +155,10 @@ const stringToCords = (s)=>{
 }
 
 const getStartCords = (roomName)=>{
-	let s = roomLoader.getRoom(roomName).startPos.split(', ').map(str=>parseInt(str));
-	return new Vector2(s[0], s[1])
+	return vectorIfy(roomLoader.getRoom(roomName).startPos)
+}
+
+const vectorIfy = (list)=>{
+	let newList = list.map(i=>parseInt(i));
+	return new Vector2(newList[0], newList[1])
 }

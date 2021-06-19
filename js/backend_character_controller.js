@@ -1,21 +1,65 @@
+const Collisions = require(__dirname + '/collision_detection.js')
+const {Vector2} = require(__dirname + '/aydab_geometry.js')
 //object literals for input handling
 const speed = 7; // set back to 7 when done testing stuff
 const moveFactor = .01;
 const moveFuncs = {
 		'up': (player, engine)=>{
 			// console.log(player.position.y)
-			player.position.y -= speed * engine.getDeltaTime() * moveFactor;
+			let potentialPosition = new Vector2(player.position.x, player.position.y - speed * engine.getDeltaTime() * moveFactor) 
+			
+			doMove(player, engine, potentialPosition);
 		},
 		'down': (player, engine)=>{
-			player.position.y += speed * engine.getDeltaTime() * moveFactor;
+			let potentialPosition = new Vector2(player.position.x, player.position.y + speed * engine.getDeltaTime() * moveFactor);
+			
+			doMove(player, engine, potentialPosition);
 		},
 		'left': (player, engine)=>{
-			player.position.x -= speed * engine.getDeltaTime() * moveFactor;
+			let potentialPosition = new Vector2(player.position.x - speed * engine.getDeltaTime() * moveFactor, player.position.y)
+
+			doMove(player, engine, potentialPosition);
 		},
 		'right': (player, engine)=>{
-			player.position.x += speed * engine.getDeltaTime() * moveFactor;
+			let potentialPosition = new Vector2( player.position.x + speed * engine.getDeltaTime() * moveFactor, player.position.y)
+
+			doMove(player, engine, potentialPosition);
 		}
 }
+
+//runs collision check and executes if the player is allowed to make that move
+const doMove = (player, engine, potentialPosition)=>{
+	if(checkCollision(potentialPosition, engine.roomLoader.getRoom(player.room))){
+		player.position = potentialPosition;
+	}
+}
+
+//checks if player can walk
+const checkCollision = (potentialPosition, room)=>{
+	
+	let walkablePolygons = []
+
+	let doWalk = false; //will return true if potentialPos is in any polygon
+
+	for(let i in room.walkable){
+		walkablePolygons.push(room.walkable[i].map((arr)=>{
+			return arr.map(a=>parseInt(a))
+		}))
+	}
+
+	for(let i in walkablePolygons){
+		// console.log([walkablePolygons[i], potentialPosition])
+		if(Collisions.pointInPolygon(vec2ToPoint(potentialPosition), walkablePolygons[i])){
+			doWalk = true;
+		}
+	}
+	return doWalk;
+}
+
+const vec2ToPoint = (v)=>{
+	return [v.x, v.y]
+}
+
 
 const keyActions = {
 		'w': moveFuncs.up,
@@ -26,7 +70,7 @@ const keyActions = {
 
 //main class
 class CharController {
-	constructor(player, engine){
+	constructor(player, engine, roomLoader){
 		this.player = player;
 		this.engine = engine;
 		this.keysDown = {};
