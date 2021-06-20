@@ -34,6 +34,12 @@ class ChatHandler {
 					this.input.value = '';
 				}
 			})
+
+			this.input.addEventListener('keypress', (e)=>{
+				if(e.key == 'Enter'){
+					this.submitButton.click();
+				}
+			})
 		}
 
 		this.newMessage = (text, senderID)=>{
