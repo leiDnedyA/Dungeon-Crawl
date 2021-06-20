@@ -10,6 +10,7 @@ const RoomLoader = require('./js/room_loader.js')
 const levelJSON = require('./levels/test_level.json')
 const {Vector2, addVectors} = require('./js/aydab_geometry.js')
 const ChatFilter = require('./js/chat_filter.js')
+const banList = require('./banned_users.json')
 
 //config variables
 const frameRate = 30;
@@ -43,14 +44,20 @@ io.on('connection', (socket)=>{
 	// player.position = new Vector2()
 	player.start();
 	
-	socket.on('start', (data)=>{
-		player.name = data.name;		
-		console.log(`${data.name} has joined the world (IP: ${player.ip})`)
-		emitConnection(player, clientList);
-		emitPlayerSetup(player, playerList);
-		emitRoom(player);
+	if(!banList.hasOwnProperty(String(player.ip))){
+		socket.on('start', (data)=>{
+			player.name = data.name;		
+			console.log(`${data.name} has joined the world (IP: ${player.ip})`)
+			emitConnection(player, clientList);
+			emitPlayerSetup(player, playerList);
+			emitRoom(player);
 
-	})
+		})
+	}else{
+		socket.disconnect();
+	}
+
+	
 
 	// console.log(clientList);
 
