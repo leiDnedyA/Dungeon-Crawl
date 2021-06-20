@@ -4,7 +4,7 @@ class RoomLoader {
 	constructor(world){
 		this.world = world;
 		this.startRoom = world.startRoom; //change this at some point
-		console.log(this.world);
+		// console.log(this.world);
 
 		this.getStart = ()=>{
 			return this.startRoom;

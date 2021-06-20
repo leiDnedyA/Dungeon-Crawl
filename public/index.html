@@ -2,8 +2,19 @@
 <html>
 <head>
 	<title>Aydab's Dungeon Crawl</title>
+	<style type="text/css">
+		#nameInput {
+			margin: 5px, 0, 5px, 0;
+		}
+		#gameCanvas {
+			border: 1px solid black;
+		}
+	</style>
 </head>
 <body>
+
+	<h1></h1>
+
 	<input type="text" name="username" id="nameInput" placeholder="username">
 	<button id="startButton">Connect</button>
 
@@ -11,10 +22,15 @@
 
 	<canvas id="gameCanvas"></canvas>
 
+	<br>
+
+	<input type="text" name="chat" id="chatInput" placeholder="chat" size = "55">
+	<button id="chatButton">Send</button>
+
 	<script src="/socket.io/socket.io.js"></script>
 	<script type="text/javascript">
 
-		let scriptList = ['aydab_math', 'game_object', 'engine', 'character_controller', 'camera_controller', 'client', 'game', 'file_manager', 'renderer', 'main'];
+		let scriptList = ['aydab_math', 'game_object', 'chat','engine', 'character_controller', 'camera_controller', 'client', 'game', 'file_manager', 'renderer', 'main'];
 
 		for(let i in scriptList){
 			let script = document.createElement('script');

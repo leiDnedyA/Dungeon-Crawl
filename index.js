@@ -8,12 +8,14 @@ const CharController = require('./js/backend_character_controller.js')
 const Engine = require('./js/engine.js')
 const RoomLoader = require('./js/room_loader.js')
 const levelJSON = require('./levels/test_level.json')
-const {Vector2} = require('./js/aydab_geometry.js')
+const {Vector2, addVectors} = require('./js/aydab_geometry.js')
+const ChatFilter = require('./js/chat_filter.js')
 
 //config variables
 const frameRate = 30;
 const port = 80;
 const engine = new Engine(frameRate);
+const chatFilter = new ChatFilter();
 const roomLoader = new RoomLoader(levelJSON);
 engine.start();
 engine.roomLoader = roomLoader;
@@ -31,8 +33,8 @@ app.use(express.static('assets'));
 io.on('connection', (socket)=>{
 	// console.log(`user connected at IP: ${socket.handshake.address}`);
 	let startRoom = roomLoader.getStart();
-	let player = new Player(socket, engine, getStartCords(startRoom), new Vector2(40, 40));
-	console.log(player.position)
+	let player = new Player(socket, engine, getStartCords(startRoom), new Vector2(40, 40)/*Eventually this is gonna have to get synced with server*/); 
+	// console.log(player.position)
 	player.ip = socket.handshake.address;
 	clientList[player.id] = player;
 	playerList[player.id] = player;
@@ -61,6 +63,8 @@ io.on('connection', (socket)=>{
 		emitDisconnection(player, clientList);
 
 	});
+
+
 })
 
 
@@ -102,6 +106,11 @@ class Player extends Client{
 			this.socket.on('moveRequest', (data)=>{
 				this.charController.setKeysDown(data);
 			})
+
+			this.socket.on('chat', (data)=>{
+				emitChat(this, data.message);
+			})
+
 		}
 		this.end = ()=>{
 			this.charController.end();
@@ -133,6 +142,21 @@ const emitRoom = (player)=>{
 			doors: room.doors
 		})
 		console.log(`${player.name} has entered room: "${player.room}"`)
+	}
+}
+
+const emitChat = (player, message)=>{
+	if(chatFilter.filter(player, message)){
+		console.log(`[CHAT] ${player.name} : '${message}'`)
+		for(let i in clientList){
+			let c = clientList[i]
+			if(c.room == player.room){
+				c.socket.emit('chat', {
+					message : message,
+					id : player.id
+				})
+			}
+		}
 	}
 }
 

@@ -5,6 +5,7 @@ class Client{
 		this.id;
 
 		this.player; // needs to be set in this.start() function
+		this.chatHandler; //see above
 		this.game = game;
 		this.engine = engine;
 		this.nonPlayerEntities = {};
@@ -23,6 +24,15 @@ class Client{
 
 		})
 
+		this.socket.on('chat', (data)=>{
+			let message = data.message;
+			let id = data.id;
+			console.log(`[CHAT] ${this.game.gameObjects[id].name} : '${message}'`)
+			if(this.chatHandler){
+				this.chatHandler.newMessage(message, id);
+			}
+		})
+
 		this.socket.on('roomChange', (data)=>{
 			this.roomChange(data);
 		})
@@ -31,8 +41,9 @@ class Client{
 			this.socket.emit('start', {name : name});
 		}
 
-		this.start = (player)=>{
+		this.start = (player, chatHandler)=>{
 			this.player = player;
+			this.chatHandler = chatHandler;
 			this.socket.on('entityData', this.handleData);
 			this.socket.on('playerConnect', this.addPlayer);
 			this.socket.on('playerDisconnect', this.deletePlayer);
@@ -75,6 +86,13 @@ class Client{
 			this.engine.renderer.setBackground(data.background)
 		}
 
+
+		//chat stuff
+		this.sendChat = (message)=>{
+			this.socket.emit('chat', {
+				message : message
+			})
+		}
 
 	}
 

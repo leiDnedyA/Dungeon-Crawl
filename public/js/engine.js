@@ -6,16 +6,18 @@ class Engine {
 		this.playerName = 'username';
 		this.player = this.game.gameObjects[this.client.id]
 		this.cameraController = new CameraController(this, this.renderer, this.player)
+		this.chatHandler = new ChatHandler(this, this.client, document.querySelector("#chatInput"), document.querySelector("#chatButton"));
 		this.updateFuncs = [];
 
 		this.start = ()=>{
 			startFunc(this);
 			this.game.playerInit(this.playerName)
 			this.game.player.setEngine(this);
-			this.client.start(this.game.player);
+			this.client.start(this.game.player, this.chatHandler);
 			this.cameraController.start();
+			this.chatHandler.start();
 			this.addUpdFunc(()=>{
-				this.renderer.render(this.game.gameObjects);
+				this.renderer.render(this.game.gameObjects, this.chatHandler.liveMessages);
 			});
 			this.addUpdFunc(()=>{this.timeUpdate()})
 

@@ -17,7 +17,7 @@ class Renderer{
 			this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 		}
 
-		this.render = (gameObjects)=>{
+		this.render = (gameObjects, messages)=>{
 			
 			this.clearScreen();
 
@@ -27,8 +27,35 @@ class Renderer{
 
 			this.ctx.drawImage(this.background, 0 - this.playerOffset.x, 0 - this.playerOffset.y);
 
+			//for drawing objects
 			for(let i in gameObjects){
 				this.drawObject(gameObjects[i]);
+			}
+
+			//for drawing messages
+			for(let i in messages){
+				let msg = messages[i];
+				let margin = 5;
+				let sender = gameObjects[msg.senderID];
+				let textSize = this.ctx.measureText(msg.text);
+				let newPos = this.adjustPos(sender.position);
+				newPos.y = newPos.y  - sender.size.y - 30;
+				let drawParams = [newPos.x, newPos.y, textSize.width + margin, 30 + margin];
+
+				this.ctx.font = "15px Georgia";
+
+				//draws border around speech bubble;
+				this.ctx.fillStyle = 'white';
+				this.ctx.fillRect(...drawParams);
+
+
+				this.ctx.fillStyle = 'black';
+				this.ctx.beginPath();
+				this.ctx.rect(...drawParams);
+				this.ctx.stroke();
+
+				this.ctx.fillText(msg.text, newPos.x + margin / 2, newPos.y + 15 + margin / 2)
+
 			}
 		}
 
@@ -36,7 +63,7 @@ class Renderer{
 			// console.log('drawing')
 			// console.log(gameObject);
 			this.ctx.fillStyle = gameObject.color;
-			let newPos = new Vector2(gameObject.position.x - this.playerOffset.x, gameObject.position.y - this.playerOffset.y)
+			let newPos = this.adjustPos(gameObject.position)
 			this.ctx.fillRect(newPos.x, newPos.y, gameObject.size.x, gameObject.size.y);
 			if(gameObject instanceof Player){
 				this.ctx.font = "15px Georgia";
@@ -80,6 +107,10 @@ class Renderer{
 					height: this.canvas.height
 				}
 			}
+		}
+
+		this.adjustPos = (pos)=>{
+			return new Vector2(pos.x - this.playerOffset.x, pos.y - this.playerOffset.y);
 		}
 
 	}
