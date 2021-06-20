@@ -31,7 +31,7 @@ app.use(express.static('assets'));
 io.on('connection', (socket)=>{
 	// console.log(`user connected at IP: ${socket.handshake.address}`);
 	let startRoom = roomLoader.getStart();
-	let player = new Player(socket, engine, getStartCords(startRoom));
+	let player = new Player(socket, engine, getStartCords(startRoom), new Vector2(40, 40));
 	console.log(player.position)
 	player.ip = socket.handshake.address;
 	clientList[player.id] = player;
@@ -92,10 +92,11 @@ class Client {
 }
 
 class Player extends Client{
-	constructor(socket, engine, position){
+	constructor(socket, engine, position, size){
 		super(Math.random().toString(), socket);
 		this.position = position;
 		this.engine = engine;
+		this.size = size;
 		this.charController = new CharController(this, engine);
 		this.start = ()=>{
 			this.socket.on('moveRequest', (data)=>{

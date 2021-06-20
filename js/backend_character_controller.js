@@ -1,5 +1,5 @@
 const Collisions = require(__dirname + '/collision_detection.js')
-const {Vector2} = require(__dirname + '/aydab_geometry.js')
+const {Vector2, addVectors} = require(__dirname + '/aydab_geometry.js')
 //object literals for input handling
 const speed = 7; // set back to 7 when done testing stuff
 const moveFactor = .01;
@@ -13,7 +13,7 @@ const moveFuncs = {
 		'down': (player, engine)=>{
 			let potentialPosition = new Vector2(player.position.x, player.position.y + speed * engine.getDeltaTime() * moveFactor);
 			
-			doMove(player, engine, potentialPosition);
+			doMove(player, engine, potentialPosition, new Vector2(0, player.size.y));
 		},
 		'left': (player, engine)=>{
 			let potentialPosition = new Vector2(player.position.x - speed * engine.getDeltaTime() * moveFactor, player.position.y)
@@ -23,13 +23,13 @@ const moveFuncs = {
 		'right': (player, engine)=>{
 			let potentialPosition = new Vector2( player.position.x + speed * engine.getDeltaTime() * moveFactor, player.position.y)
 
-			doMove(player, engine, potentialPosition);
+			doMove(player, engine, potentialPosition, new Vector2(player.size.x, 0));
 		}
 }
 
 //runs collision check and executes if the player is allowed to make that move
-const doMove = (player, engine, potentialPosition)=>{
-	if(checkCollision(potentialPosition, engine.roomLoader.getRoom(player.room))){
+const doMove = (player, engine, potentialPosition, sizeDelta = new Vector2(0, 0))=>{
+	if(checkCollision(addVectors(potentialPosition, sizeDelta), engine.roomLoader.getRoom(player.room))){
 		player.position = potentialPosition;
 	}
 }
