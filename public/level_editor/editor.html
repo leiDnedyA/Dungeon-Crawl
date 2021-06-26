@@ -6,5 +6,28 @@
 </head>
 <body>
 <h1>Editor</h1>
+<canvas id="canvas"></canvas>
+<br>
+<label for="imageUpload">Upload Background Image --></label>
+<input type="file" id="imageUpload" name="imageUpload">
+<br>
+<button id="uploadButton">Upload</button>
+
+<br>
+
+<p>Create a list of points for walkable areas</p>
+<button id="pointButton">Start List</button>
+<p id="targetP">points: []</p>
+<script type="text/javascript">
+	let scriptList = ['file_loader', 'engine', 'point_selector', 'canvas_interface', 'main'];
+
+	for(let i in scriptList){
+		let script = document.createElement('script');
+		script.setAttribute('type', 'text/javascript');
+		script.setAttribute('src', `./js/${scriptList[i]}.js`);
+		document.body.appendChild(script);
+	}
+
+</script>
 </body>
 </html>

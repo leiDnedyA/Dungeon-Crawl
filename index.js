@@ -47,7 +47,7 @@ io.on('connection', (socket)=>{
 	if(!banList.hasOwnProperty(String(player.ip))){
 		socket.on('start', (data)=>{
 			player.name = data.name;		
-			console.log(`${data.name} has joined the world (IP: ${player.ip})`)
+			console.log(`[${getTimeStamp()}] : ${data.name} has joined the world (IP: ${player.ip})`)
 			emitConnection(player, clientList);
 			emitPlayerSetup(player, playerList);
 			emitRoom(player);
@@ -62,7 +62,7 @@ io.on('connection', (socket)=>{
 	// console.log(clientList);
 
 	socket.on('disconnect', ()=>{
-		console.log(`user ${player.name} disconnected at IP: ${socket.handshake.address}`);
+		console.log(`[${getTimeStamp()}] : user ${player.name} disconnected at IP: ${socket.handshake.address}`);
 		playerList[player.id].end();
 		delete playerList[player.id];
 		delete clientList[player.id];
@@ -154,7 +154,7 @@ const emitRoom = (player)=>{
 
 const emitChat = (player, message)=>{
 	if(chatFilter.filter(player, message)){
-		console.log(`[CHAT] ${player.name} : '${message}'`)
+		console.log(`[${getTimeStamp()}] : [CHAT] ${player.name} : '${message}'`)
 		for(let i in clientList){
 			let c = clientList[i]
 			if(c.room == player.room){
@@ -193,4 +193,9 @@ const getStartCords = (roomName)=>{
 const vectorIfy = (list)=>{
 	let newList = list.map(i=>parseInt(i));
 	return new Vector2(newList[0], newList[1])
+}
+
+const getTimeStamp = ()=>{
+	let date = new Date();
+	return `${date.getFullYear()}:${date.getMonth()+1}:${date.getDate()}:${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
 }
