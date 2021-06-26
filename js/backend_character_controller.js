@@ -2,28 +2,29 @@ const Collisions = require(__dirname + '/collision_detection.js')
 const {Vector2, addVectors} = require(__dirname + '/aydab_geometry.js')
 //object literals for input handling
 const speed = 7; // set back to 7 when done testing stuff
+const verticalMargin = - 2;
 const moveFactor = .01;
 const moveFuncs = {
 		'up': (player, engine)=>{
 			// console.log(player.position.y)
 			let potentialPosition = new Vector2(player.position.x, player.position.y - speed * engine.getDeltaTime() * moveFactor) 
 			
-			doMove(player, engine, potentialPosition);
+			doMove(player, engine, potentialPosition, new Vector2(0, player.size.y + verticalMargin));
 		},
 		'down': (player, engine)=>{
 			let potentialPosition = new Vector2(player.position.x, player.position.y + speed * engine.getDeltaTime() * moveFactor);
 			
-			doMove(player, engine, potentialPosition, new Vector2(0, player.size.y));
+			doMove(player, engine, potentialPosition, new Vector2(0, player.size.y + verticalMargin));
 		},
 		'left': (player, engine)=>{
 			let potentialPosition = new Vector2(player.position.x - speed * engine.getDeltaTime() * moveFactor, player.position.y)
 
-			doMove(player, engine, potentialPosition);
+			doMove(player, engine, potentialPosition, new Vector2(0, player.size.y + verticalMargin));
 		},
 		'right': (player, engine)=>{
 			let potentialPosition = new Vector2( player.position.x + speed * engine.getDeltaTime() * moveFactor, player.position.y)
 
-			doMove(player, engine, potentialPosition, new Vector2(player.size.x, 0));
+			doMove(player, engine, potentialPosition, new Vector2(player.size.x, player.size.y + verticalMargin));
 		}
 }
 
