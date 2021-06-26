@@ -20,19 +20,18 @@ class CanvasInterface {
 
 		this.handleResize = ()=>{
 			let innerWidth = window.innerWidth/2;
-				let innerHeight = window.innerHeight/2;
+			let innerHeight = window.innerHeight/2;
 
-				this.backgroundScale = innerHeight /this.background.height;
+			// console.log(`${heightRatio}, ${innerHeight}, ${innerWidth}`)
 
-				// console.log(`${heightRatio}, ${innerHeight}, ${innerWidth}`)
-
-				if(innerWidth >= this.background.width * this.backgroundScale){
-					this.canvas.width = this.background.width * this.backgroundScale;
-				}else{
-					this.canvas.width = innerWidth;
-				}
-
+			if(this.background.src == ""){
+				this.canvas.width = innerWidth;
 				this.canvas.height = innerHeight;
+			}else{
+				this.canvas.width = this.background.width;
+
+				this.canvas.height = this.background.height;
+			}
 		}
 
 	}

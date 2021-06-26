@@ -13,8 +13,13 @@
 <br>
 <button id="uploadButton">Upload</button>
 
+<br>
+
+<p>Create a list of points for walkable areas</p>
+<button id="pointButton">Start List</button>
+<p id="targetP">points: []</p>
 <script type="text/javascript">
-	let scriptList = ['file_loader', 'engine', 'canvas_interface', 'main'];
+	let scriptList = ['file_loader', 'engine', 'point_selector', 'canvas_interface', 'main'];
 
 	for(let i in scriptList){
 		let script = document.createElement('script');
