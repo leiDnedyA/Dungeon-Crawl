@@ -8,18 +8,25 @@
 <h1>Editor</h1>
 <canvas id="canvas"></canvas>
 <br>
-<label for="imageUpload">Upload Background Image --></label>
+<b><label for="imageUpload">Upload Background Image --></label></b>
 <input type="file" id="imageUpload" name="imageUpload">
 <br>
 <button id="uploadButton">Upload</button>
 
 <br>
 
-<p>Create a list of points for walkable areas</p>
+<p><b>Create a list of points for walkable areas</b></p>
 <button id="pointButton">Start List</button>
-<p id="targetP">points: []</p>
+<p id="targetP">current polygon: []</p>
+
+<br>
+
+<p><b>Export level JSON</b></p>
+
+<button id="exportButton">Download JSON</button>
+
 <script type="text/javascript">
-	let scriptList = ['file_loader', 'engine', 'point_selector', 'canvas_interface', 'main'];
+	let scriptList = ['file_loader', 'engine', 'aydab_classes', 'level_manager', 'room_creator', 'point_selector', 'canvas_interface', 'main'];
 
 	for(let i in scriptList){
 		let script = document.createElement('script');

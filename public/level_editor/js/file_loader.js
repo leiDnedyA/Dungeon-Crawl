@@ -18,5 +18,9 @@ class FileLoader {
 			}
 		}
 
+		this.exportJSON = ()=>{
+			
+		}
+
 	}
 }

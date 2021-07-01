@@ -62,7 +62,9 @@ io.on('connection', (socket)=>{
 	// console.log(clientList);
 
 	socket.on('disconnect', ()=>{
-		console.log(`[${getTimeStamp()}] : user ${player.name} disconnected at IP: ${socket.handshake.address}`);
+		if(player.name){
+			console.log(`[${getTimeStamp()}] : user ${player.name} disconnected at IP: ${socket.handshake.address}`);
+		}
 		playerList[player.id].end();
 		delete playerList[player.id];
 		delete clientList[player.id];
