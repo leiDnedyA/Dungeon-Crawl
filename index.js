@@ -1,5 +1,6 @@
 //writes contents of server_msg.txt to console
 const requireText = require('require-text');
+console.clear()
 console.log(requireText('./server_msg.txt', require));
 
 //imports and initializes all modules
@@ -17,6 +18,7 @@ const {Vector2, addVectors} = require('./js/aydab_geometry.js')
 const ChatFilter = require('./js/chat_filter.js')
 const banList = require('./banned_users.json')
 const commandHandler = require('./js/command_handler.js');
+const AydabConsole = require('./js/aydab_console.js');
 
 //config variables
 const frameRate = 30;
@@ -33,6 +35,7 @@ var playerList = {}
 
 //initializes command handler
 const commands = new commandHandler(clientList);
+const aydabConsole = new AydabConsole(commands);
 
 //express server setup
 app.use(express.static('public'));
@@ -56,7 +59,7 @@ io.on('connection', (socket)=>{
 	if(!banList.hasOwnProperty(String(player.ip))){
 		socket.on('start', (data)=>{
 			player.name = data.name;		
-			console.log(`[${getTimeStamp()}] : ${data.name} has joined the world (IP: ${player.ip})`)
+			aydabConsole.log(`[${getTimeStamp()}] : ${data.name} has joined the world (IP: ${player.ip})`)
 			emitConnection(player, clientList);
 			emitPlayerSetup(player, playerList);
 			emitRoom(player);
@@ -161,13 +164,13 @@ const emitRoom = (player)=>{
 			id: room.id,
 			doors: room.doors
 		})
-		console.log(`${player.name} has entered room: "${player.room}"`)
+		aydabConsole.log(`${player.name} has entered room: "${player.room}"`)
 	}
 }
 
 const emitChat = (player, message)=>{
 	if(chatFilter.filter(player, message)){
-		console.log(`[${getTimeStamp()}] : [CHAT] ${player.name} : '${message}'`)
+		aydabConsole.log(`[${getTimeStamp()}] : [CHAT] ${player.name} : '${message}'`)
 		for(let i in clientList){
 			let c = clientList[i]
 			if(c.room == player.room){
