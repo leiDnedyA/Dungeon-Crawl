@@ -1,3 +1,8 @@
+//writes contents of server_msg.txt to console
+const requireText = require('require-text');
+console.log(requireText('./server_msg.txt', require));
+
+//imports and initializes all modules
 const express = require('express');
 const app = express();
 const http = require('http');
@@ -11,6 +16,7 @@ const levelJSON = require('./levels/test_level.json')
 const {Vector2, addVectors} = require('./js/aydab_geometry.js')
 const ChatFilter = require('./js/chat_filter.js')
 const banList = require('./banned_users.json')
+const commandHandler = require('./js/command_handler.js');
 
 //config variables
 const frameRate = 30;
@@ -24,6 +30,9 @@ engine.roomLoader = roomLoader;
 //player and client lists
 var clientList = {}
 var playerList = {}
+
+//initializes command handler
+const commands = new commandHandler(clientList);
 
 //express server setup
 app.use(express.static('public'));
@@ -80,6 +89,8 @@ io.on('connection', (socket)=>{
 //http server setup
 server.listen(port, ()=>{
 	console.log(`Server started on port ${port}`);
+	
+	commands.start(); //start of command input being accepted
 	
 	//function that updates all players
 	engine.addUpdateFunc('MAIN', ()=>{
