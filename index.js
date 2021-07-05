@@ -2,7 +2,13 @@
 const requireText = require('require-text');
 const chalk = require('chalk');
 console.clear()
-console.log(chalk.cyan(requireText('./server_msg.txt', require)));
+console.log(requireText('./server_msg.txt', require).split('').map((a)=>{
+	if(a == '$'){
+		return chalk.cyan(a);
+	}else{
+		return chalk.gray(a);
+	}
+}).join(''));
 
 //imports and initializes all modules
 const express = require('express');
