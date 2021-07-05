@@ -1,7 +1,8 @@
 //writes contents of server_msg.txt to console
 const requireText = require('require-text');
+const chalk = require('chalk');
 console.clear()
-console.log(requireText('./server_msg.txt', require));
+console.log(chalk.cyan(requireText('./server_msg.txt', require)));
 
 //imports and initializes all modules
 const express = require('express');
@@ -91,7 +92,7 @@ io.on('connection', (socket)=>{
 
 //http server setup
 server.listen(port, ()=>{
-	console.log(`Server started on port ${port}`);
+	console.log(`${chalk.bgGreen('SUCCESS')} : Server started on port ${port}`);
 	
 	commands.start(); //start of command input being accepted
 	
@@ -164,13 +165,13 @@ const emitRoom = (player)=>{
 			id: room.id,
 			doors: room.doors
 		})
-		aydabConsole.log(`${player.name} has entered room: "${player.room}"`)
+		aydabConsole.log(`${chalk.cyan(player.name)} has entered room: "${player.room}"`)
 	}
 }
 
 const emitChat = (player, message)=>{
 	if(chatFilter.filter(player, message)){
-		aydabConsole.log(`[${getTimeStamp()}] : [CHAT] ${player.name} : '${message}'`)
+		aydabConsole.log(`[${getTimeStamp()}] ${chalk.cyan(player.name)} : '${message}'`)
 		for(let i in clientList){
 			let c = clientList[i]
 			if(c.room == player.room){

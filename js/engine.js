@@ -34,7 +34,7 @@ class Engine {
 
 		this.start = ()=>{
 			setInterval(this.update, 1000/this.frameRate);
-			console.log('engine running')
+			// console.log('engine running')
 		}
 
 		this.addUpdateFunc = (id, callback)=>{

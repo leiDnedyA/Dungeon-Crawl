@@ -8,6 +8,7 @@
   "author": "Ayden Diel",
   "license": "ISC",
   "dependencies": {
+    "chalk": "^4.1.1",
     "express": "^4.17.1",
     "point-in-polygon": "^1.1.0",
     "require-text": "0.0.1",
