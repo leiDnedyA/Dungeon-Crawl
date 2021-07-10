@@ -4,7 +4,7 @@ class ChatHandler {
 		
 		//an object literal for different numbers that might change
 		this.defaults = {
-			submitWidth : 40
+			submitWidth : "100%"
 		}
 
 		//references to engine and client
@@ -59,15 +59,7 @@ class ChatHandler {
 
 		this.resizeElements = ()=>{
 
-			let potentialWidth = this.canvas.offsetWidth - this.input.offsetWidth;
-
-			// console.log(potentialWidth)
-
-			if(potentialWidth >= 40){
-				this.submitButton.style.width = `${potentialWidth}px`;
-			}else{
-				this.submitButton.style.width = `${this.defaults.submitWidth}px`
-			}
+			
 			
 		}
 

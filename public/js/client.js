@@ -33,10 +33,21 @@ class Client{
 			}
 		})
 
+
+		this.socket.on('playerLeftRoom', (data)=>{
+			this.deletePlayer(data);
+			// console.log(data);
+		})
+
+
+		this.socket.on('playerJoinedRoom', (data)=>{
+			this.addPlayer(data)
+		})
+
 		this.socket.on('roomChange', (data)=>{
 			this.roomChange(data);
-		})
-;
+		});
+
 		this.emitStart = (name)=>{
 			this.socket.emit('start', {name : name});
 		}
@@ -82,8 +93,22 @@ class Client{
 		}
 
 		this.roomChange = (data)=>{
-			console.log(data);
+			// console.log(data);
 			this.engine.renderer.setBackground(data.background)
+
+			this.game.gameObjects = [];
+
+			// console.log(data.entities);
+			// console.log(this.gameObjects);
+
+			for(let i in data.entities){
+				this.addPlayer(data.entities[i])
+			}
+
+			this.player = this.game.gameObjects[this.id];
+
+			this.engine.setPlayer(this.player);
+
 		}
 
 

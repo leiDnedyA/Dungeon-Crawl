@@ -14,6 +14,8 @@ class Engine {
 			this.game.playerInit(this.playerName)
 			this.game.player.setEngine(this);
 			this.client.start(this.game.player, this.chatHandler);
+			this.setPlayer(this.game.player);
+			this.player.setClient(this.client);
 			this.cameraController.start();
 			this.chatHandler.start();
 			this.addUpdFunc(()=>{

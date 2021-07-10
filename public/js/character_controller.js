@@ -11,6 +11,13 @@ class CharacterController{
 				'd': true,
 			}
 
+		this.specialKeys = {
+			'Space' : ()=>{
+				this.player.client.socket.emit('doorRequest', {});
+				// console.log(this.player)
+			}
+		}
+
 		this.moveFactor = .01;
 
 		this.engine;
@@ -22,6 +29,9 @@ class CharacterController{
 		this.handleKeyDown = (e)=>{
 			if(this.keyActions.hasOwnProperty(e.key)){
 				this.keysDown[e.key] = true;
+			}
+			if(this.specialKeys.hasOwnProperty(e.code)){
+				this.specialKeys[e.code]();
 			}
 		}
 		this.handleKeyUp = (e)=>{

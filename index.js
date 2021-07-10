@@ -82,7 +82,7 @@ io.on('connection', (socket)=>{
 
 	socket.on('disconnect', ()=>{
 		if(player.name){
-			console.log(`[${getTimeStamp()}] : user ${player.name} disconnected at IP: ${socket.handshake.address}`);
+			console.log(`[${getTimeStamp()}] : user ${chalk.cyan(player.name)} disconnected at IP: ${socket.handshake.address}`);
 		}
 		playerList[player.id].end();
 		delete playerList[player.id];
@@ -104,15 +104,28 @@ server.listen(port, ()=>{
 	
 	//function that updates all players
 	engine.addUpdateFunc('MAIN', ()=>{
-		let data = {};
-		for(let j in playerList){
-			data[j] = {
-				'position' : [playerList[j].position.x, playerList[j].position.y],
-				'id' : j
-			}
-		}
+		// let data = {};
+		// for(let j in playerList){
+		// 	data[j] = {
+		// 		'position' : [playerList[j].position.x, playerList[j].position.y],
+		// 		'id' : j
+		// 	}
+		// }
+		// for(let i in clientList){
+		// 	clientList[i].socket.emit('entityData', data)
+		// }
 		for(let i in clientList){
-			clientList[i].socket.emit('entityData', data)
+			let data = {};
+			for(let j in playerList){
+				if(playerList[j].room == playerList[i].room){
+					data[j] = {
+						'position' : [playerList[j].position.x, playerList[j].position.y],
+						'id' : j			
+					}
+				}
+			}
+			clientList[i].socket.emit('entityData', data);
+
 		}
 	});
 })
@@ -141,6 +154,10 @@ class Player extends Client{
 				emitChat(this, data.message);
 			})
 
+			this.socket.on('doorRequest', (data)=>{
+				checkDoors(this);
+			})
+
 		}
 		this.end = ()=>{
 			this.charController.end();
@@ -149,16 +166,44 @@ class Player extends Client{
 }
 
 
+//player request handlers
+const checkDoors = (player)=>{ //handles requests to go thru door
+	let currentRoom = roomLoader.getRoom(player.room);
+	for(let i in currentRoom.doors){
+		let currDoor = currentRoom.doors[i];
+		let doorPos = vectorIfy(currDoor.position);
+		let doorSize = parseInt(currDoor.size);
+		let distanceToDoor = new Vector2(player.position.x - doorPos.x, player.position.y - doorPos.y);
+		if(distanceToDoor.x <= currDoor.size && distanceToDoor.y <= currDoor.size){
+			emitRoomExit(player, currentRoom.name, clientList);
+			player.room = currDoor.destination;
+			emitRoom(player);
+			emitConnection(player, clientList);
+			player.position = vectorIfy(roomLoader.getRoom(player.room).startPos);
+		}
+	}
+}
+
 //helper functions for server
 const emitConnection = (player, clients)=>{
 	for(let i in clients){
-		clients[i].socket.emit('playerConnect', {id: player.id, position: player.position, name: player.name});
+		if(clients[i].room == player.room){
+			clients[i].socket.emit('playerConnect', {id: player.id, position: player.position, name: player.name});
+		}
 	}
 }
 
 const emitDisconnection = (player, clients)=>{
 	for(let i in clients){
 		clients[i].socket.emit('playerDisconnect', {id: player.id});
+	}
+}
+
+const emitRoomExit = (player, lastRoom, clients)=>{
+	for(let i in clients){
+		if(clients[i].room == lastRoom){
+			clients[i].socket.emit('playerLeftRoom', {id: player.id});
+		}
 	}
 }
 
@@ -169,7 +214,8 @@ const emitRoom = (player)=>{
 			name : player.room,
 			background : room.background,
 			id: room.id,
-			doors: room.doors
+			doors: room.doors,
+			entities: getEntityList(player.room)
 		})
 		aydabConsole.log(`${chalk.cyan(player.name)} has entered room: "${player.room}"`)
 	}
@@ -203,6 +249,18 @@ const emitPlayerSetup = (player, players)=>{
 }
 
 //misc functions
+
+const getEntityList = (roomName)=>{
+	let data = [];
+	for(let i in playerList){
+		if(playerList[i].room == roomName){
+			data.push({
+				name : playerList[i].name, id: i, position: playerList[i].position
+			})
+		}
+	}
+	return data;
+}
 
 const stringToCords = (s)=>{
 	let cords = s.split(', ');

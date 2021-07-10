@@ -28,6 +28,10 @@ class Player extends Entity{
 		this.setEngine = (engine)=>{
 			this.controller.init(engine);
 		}
+
+		this.setClient = (client)=>{
+			this.client = client;
+		}
 	}
 }
 
