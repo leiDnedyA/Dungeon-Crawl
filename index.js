@@ -82,7 +82,7 @@ io.on('connection', (socket)=>{
 
 	socket.on('disconnect', ()=>{
 		if(player.name){
-			console.log(`[${getTimeStamp()}] : user ${chalk.cyan(player.name)} disconnected at IP: ${socket.handshake.address}`);
+			aydabConsole.log(`[${getTimeStamp()}] : user ${chalk.cyan(player.name)} disconnected at IP: ${socket.handshake.address}`);
 		}
 		playerList[player.id].end();
 		delete playerList[player.id];
