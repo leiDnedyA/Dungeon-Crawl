@@ -15,5 +15,13 @@
     "socket.io": "^4.1.2"
   },
   "devDependencies": {},
-  "description": ""
+  "description": "Dungeon Crawl is an MMO run in the browser. It is fully built on JavaScript and NODE.js. Obviously, it's a WIP but expect more features to come soon",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leiDnedyA/Dungeon-Crawl.git"
+  },
+  "bugs": {
+    "url": "https://github.com/leiDnedyA/Dungeon-Crawl/issues"
+  },
+  "homepage": "https://github.com/leiDnedyA/Dungeon-Crawl#readme"
 }
