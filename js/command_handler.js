@@ -17,6 +17,17 @@ const commandOBJ = {
 		let message = input.split(' ').slice(1).join(' ');
 		console.log(`SERVER: ${message}`);
 	},
+	userlist : (input, clientList)=>{
+		console.log(clientList)
+		let users;
+		if(clientList){
+			users = clientList.map((e)=>{
+			return e.name;
+		})
+			users = users.join(", ");
+		}
+		console.log(`User list: ${users}`);
+	},
 	help : (input)=>{
 		let splitInput = input.split(' ');
 		if(splitInput.length == 1){
@@ -58,7 +69,7 @@ class CommandHandler {
 
 		this.recursiveCommand = ()=>{
 			rl.question('> ', (input)=>{
-				this.handleCommand(input);
+				this.handleCommand(input, this.clientList);
 				this.recursiveCommand();
 			})
 		}

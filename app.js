@@ -27,18 +27,20 @@ const banList = require('./banned_users.json')
 const commandHandler = require('./js/command_handler.js');
 const AydabConsole = require('./js/aydab_console.js');
 
+
+//player and client lists
+var clientList = {}
+var playerList = {}
+
 //config variables
 const frameRate = 30;
 const port = 80;
-const engine = new Engine(frameRate);
+const engine = new Engine(frameRate, playerList);
 const chatFilter = new ChatFilter();
 const roomLoader = new RoomLoader(levelJSON);
 engine.start();
 engine.roomLoader = roomLoader;
 
-//player and client lists
-var clientList = {}
-var playerList = {}
 
 //initializes command handler
 const commands = new commandHandler(clientList);

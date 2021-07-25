@@ -27,16 +27,18 @@ class CharacterController{
 		}
 
 		this.handleKeyDown = (e)=>{
-			if(this.keyActions.hasOwnProperty(e.key)){
-				this.keysDown[e.key] = true;
+			let newKey = e.key.toLowerCase();
+			if(this.keyActions.hasOwnProperty(newKey)){
+				this.keysDown[newKey] = true;
 			}
 			if(this.specialKeys.hasOwnProperty(e.code)){
 				this.specialKeys[e.code]();
 			}
 		}
 		this.handleKeyUp = (e)=>{
-			if(this.keyActions.hasOwnProperty(e.key)){
-				this.keysDown[e.key] = false;
+			let newKey = e.key.toLowerCase();
+			if(this.keyActions.hasOwnProperty(newKey)){
+				this.keysDown[newKey] = false;
 			}
 		}
 	

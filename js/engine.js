@@ -1,11 +1,12 @@
 
 class Engine {
-	constructor(frameRate){
+	constructor(frameRate, playerList){
 		
 		this.frameRate = frameRate;
 		this.updateFuncs = {};
 		this.deltaTime = 0;
 		this.lastUpdate = Date.now();
+		this.playerList = playerList;
 
 		this.update = ()=>{
 			// console.log('update')
