@@ -25,8 +25,3 @@ class Level {
 
 	}
 }
-
-//will be completed later
-class Door {
-
-}

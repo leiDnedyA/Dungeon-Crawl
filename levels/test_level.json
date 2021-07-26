@@ -10,12 +10,20 @@
 				"main" :   [["43", "514"], ["146", "319"], ["220", "320"], ["217", "295"], ["277", "296"], ["322", "321"], ["394", "313"], ["459", "322"], ["1013", "420"], ["1013", "514"], ["1013", "514"], ["-1", "516"]]
 			},
 			"background" : "/img/rooms/diner.png",
-			"doors" : [{
-				"isLocked" : "false",
-				"destination" : "big_door",
-				"position" : ["250", "308"],
-				"size" : "40"
-			}]
+			"doors" : [
+				{
+					"isLocked" : "false",
+					"destination" : "big_door",
+					"position" : ["250", "308"],
+					"size" : "40"
+				},
+				{
+					"isLocked" : "false",
+					"destination" : "rembrandt",
+					"position" : ["473", "315"],
+					"size" : "40"
+				}
+			]
 		},
 		"big_door" : {
 			"name" : "big_door",
@@ -32,6 +40,23 @@
 				"position" : ["291", "417"],
 				"size" : "40"
 			}
+			]
+		},
+		"rembrandt" : {
+			"name" : "rembrandt",
+			"id" : "002",
+			"startPos" : ["37", "426"],
+			"walkable" : {
+				"main" : [["0", "0"], ["684", "0"], ["648", "928"], ["0", "928"]]
+			},
+			"background" : "/img/rooms/rembrandt.jpg",
+			"doors" : [
+				{
+					"isLocked" : "false",
+					"destination" : "diner",
+					"position" : ["37", "426"],
+					"size" : "40"
+				}
 			]
 		}
 	}
