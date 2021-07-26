@@ -40,6 +40,7 @@ class Renderer{
 				let textSize = this.ctx.measureText(msg.text);
 				let newPos = this.adjustPos(sender.position);
 				newPos.y = newPos.y  - sender.size.y - 30;
+				newPos.x = newPos.x - (textSize.width/2) + sender.size.x / 2;
 				let drawParams = [newPos.x, newPos.y, textSize.width + margin, 30 + margin];
 
 				this.ctx.font = "15px Georgia";

@@ -43,6 +43,11 @@ class ChatHandler {
 		}
 
 		this.newMessage = (text, senderID)=>{
+			for(let i in this.liveMessages){
+				if(this.liveMessages[i].senderID == senderID){
+					this.liveMessages.splice(i, 1);
+				}
+			}
 			this.liveMessages.push(new Message(text, senderID));
 		}
 
