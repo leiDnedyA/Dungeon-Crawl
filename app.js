@@ -224,13 +224,14 @@ const emitRoom = (player)=>{
 }
 
 const emitChat = (player, message)=>{
-	if(chatFilter.filter(player, message)){
-		aydabConsole.log(`[${getTimeStamp()}] ${chalk.cyan(player.name)} : '${message}'`)
+	let newChat = chatFilter.filter(player, message); //puts chat thru filter
+	if(newChat != false){ //only sends chat if filter allows
+		aydabConsole.log(`[${getTimeStamp()}] ${chalk.cyan(player.name)} : '${newChat}'`)
 		for(let i in clientList){
 			let c = clientList[i]
 			if(c.room == player.room){
 				c.socket.emit('chat', {
-					message : message,
+					message : newChat,
 					id : player.id
 				})
 			}
