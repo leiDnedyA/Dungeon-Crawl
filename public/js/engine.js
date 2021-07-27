@@ -8,6 +8,7 @@ class Engine {
 		this.cameraController = new CameraController(this, this.renderer, this.player)
 		this.chatHandler = new ChatHandler(this, this.client, document.querySelector("#chatInput"), document.querySelector("#chatButton"));
 		this.updateFuncs = [];
+		this.ended = false; //game loop will only run if this is false. 
 
 		this.start = ()=>{
 			startFunc(this);
@@ -26,11 +27,20 @@ class Engine {
 			setInterval(this.update, 1000/framerate);
 		};
 		this.update = ()=>{
-			updFunc(this);
-			for(let i in this.updateFuncs){
-				this.updateFuncs[i](this);
+			if(!this.ended){
+				updFunc(this);
+				for(let i in this.updateFuncs){
+					this.updateFuncs[i](this);
+				}
 			}
 		};
+
+
+		this.endSession = ()=>{
+
+			this.renderer.endSession();
+			this.ended = true;
+		}
 	}
 
 	getGame(){

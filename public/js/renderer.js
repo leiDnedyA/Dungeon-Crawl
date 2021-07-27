@@ -64,7 +64,17 @@ class Renderer{
 
 				this.ctx.fillText(msg.text, newPos.x + margin / 2, newPos.y + 15 + margin / 2)
 
+
 			}
+		}
+
+		this.endSession = ()=>{
+			this.blackScreen();
+		}
+
+		this.blackScreen = ()=>{
+			this.ctx.fillStyle = "black";
+			this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
 		}
 
 		this.drawObject = (gameObject)=>{

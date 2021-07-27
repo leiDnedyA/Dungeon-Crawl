@@ -11,6 +11,7 @@ console.log(requireText('./server_msg.txt', require).split('').map((a)=>{
 }).join(''));
 
 //imports and initializes all modules
+const config = require('./config.json');
 const express = require('express');
 const app = express();
 const http = require('http');
@@ -26,7 +27,15 @@ const ChatFilter = require('./js/chat_filter.js')
 const banList = require('./banned_users.json')
 const commandHandler = require('./js/command_handler.js');
 const AydabConsole = require('./js/aydab_console.js');
+const JoinFilter = require('./js/join_filter.js');
 
+const configOptions = ["maxPlayersPerIP", "chatCharLimit", "chatMinWait", "maxSpamAttempts", "nameCharLimit"];
+
+for(let i in configOptions){
+	if(!config.hasOwnProperty(configOptions[i])){
+		console.error(`ERROR: config.json missing element: ${configOptions[i]}`);
+	}
+}
 
 //player and client lists
 var clientList = {}
@@ -37,6 +46,7 @@ const frameRate = 30;
 const port = 80;
 const engine = new Engine(frameRate, playerList);
 const chatFilter = new ChatFilter();
+const joinFilter = new JoinFilter(banList, clientList)
 const roomLoader = new RoomLoader(levelJSON);
 engine.start();
 engine.roomLoader = roomLoader;
@@ -57,7 +67,7 @@ io.on('connection', (socket)=>{
 	let startRoom = roomLoader.getStart();
 	let player = new Player(socket, engine, getStartCords(startRoom), new Vector2(40, 40)/*Eventually this is gonna have to get synced with server*/); 
 	// console.log(player.position)
-	player.ip = socket.handshake.address;
+	player.setIP(socket.handshake.address);
 	clientList[player.id] = player;
 	playerList[player.id] = player;
 	player.room = startRoom;
@@ -65,18 +75,31 @@ io.on('connection', (socket)=>{
 	// player.position = new Vector2()
 	player.start();
 	
-	if(!banList.hasOwnProperty(String(player.ip))){
+	if(joinFilter.filter(player)){
 		socket.on('start', (data)=>{
-			player.name = data.name;		
+			player.setName(data.name);
+			if(joinFilter.filterName(player)){
+				player.setName(data.name);		
+				aydabConsole.log(`[${getTimeStamp()}] : ${data.name} has joined the world (IP: ${player.ip})`)
+				emitConnection(player, clientList);
+				emitPlayerSetup(player, playerList);
+				emitRoom(player);
+			}
+
+		})
+	}
+
+	if(joinFilter.filter(player)){
+		socket.on('start', (data)=>{
+			player.setName(data.name);		
 			aydabConsole.log(`[${getTimeStamp()}] : ${data.name} has joined the world (IP: ${player.ip})`)
 			emitConnection(player, clientList);
 			emitPlayerSetup(player, playerList);
 			emitRoom(player);
 
 		})
-	}else{
-		socket.disconnect();
 	}
+
 
 	
 
@@ -145,6 +168,12 @@ class Player extends Client{
 		super(Math.random().toString(), socket);
 		this.position = position;
 		this.engine = engine;
+		this.name = "";
+		this.spamAttempts = 0; //how many messages in a row have been sent too fast
+		this.lastMessage = {
+			text: "",
+			time: new Date().getTime()
+		};
 		this.size = size;
 		this.charController = new CharController(this, engine);
 		this.start = ()=>{
@@ -161,8 +190,29 @@ class Player extends Client{
 			})
 
 		}
+		this.setName = (name)=>{
+			this.name = name;
+		}
+		this.setIP = (ip)=>{
+			this.ip = ip;
+		}
+		this.setLastMessage = (text, time)=>{
+			this.lastMessage = {
+				text: text,
+				time: time
+			}
+		}
 		this.end = ()=>{
 			this.charController.end();
+		}
+		this.kick = (reason)=>{
+			this.socket.emit("kick", {
+				reason: reason
+			});
+			this.socket.disconnect();
+			this.end();
+			aydabConsole.log(`${chalk.green("SUCCESS")}: player ${chalk.cyan(this.name)} has been kicked @ ip: ${chalk.cyan(this.ip)}`)
+			delete this;
 		}
 	}
 }

@@ -48,6 +48,15 @@ class Client{
 			this.roomChange(data);
 		});
 
+		this.socket.on('kick', (data)=>{
+			if(data.reason){
+				alert(`You have been kicked for reason: ${data.reason}`)
+			}else{
+				alert('You have been kicked from the server.');
+			}
+			location.reload();
+		})
+
 		this.emitStart = (name)=>{
 			this.socket.emit('start', {name : name});
 		}

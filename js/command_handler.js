@@ -6,11 +6,44 @@ const rl = readline.createInterface({
 	prompt: '> '
 })
 
+const inpError = (input)=>{
+	console.log(`"${input}" is not a valid input. Please type "help" to see a list of commands and "help <command name>" to see the correct syntax for the command.`);
+}
+
 const commandOBJ = {
-	kick : (input)=>{
+	kick : (input, clientList)=>{
+		let message = input.split(' ');
+		if(message.length != 3){
+			inpError(input);
+			return;
+		}
+		let mode = message[1];
+		let id = message[2];
+		let targetList = [];
+		if(mode == "ip"){
+			for(let i in clientList){
+				if(clientList[i].ip == id){
+					targetList.push(clientList[i]);
+				}
+			}
+		}else if(mode == "player"){
+			for(let i in clientList){
+				if(clientList[i].name == id){
+					targetList.push(clientList[i]);
+				}
+			}
+		}else{
+			inpError(input);
+			console.log(`INPUT ERROR: "${mode}" is not a valid option`)
+			return;
+		}
+
+		for(let i in targetList){
+			targetList[i].kick(null);
+		}
 
 	},
-	ban : (input)=>{
+	ban : (input, clientList)=>{
 
 	},
 	chat : (input)=>{
@@ -18,15 +51,27 @@ const commandOBJ = {
 		console.log(`SERVER: ${message}`);
 	},
 	userlist : (input, clientList)=>{
-		console.log(clientList)
-		let users;
+		
+		let splitInput = input.split(' ');
+		let room = splitInput[1];
+		let users = [];
 		if(clientList){
-			users = clientList.map((e)=>{
-			return e.name;
-		})
+			for(let i in clientList){
+				if(room){
+					if(clientList[i].room == room){
+						users.push(clientList[i].name);
+					}
+				}else{
+					users.push(clientList[i].name);
+				}
+			}
 			users = users.join(", ");
 		}
-		console.log(`User list: ${users}`);
+		if(room){
+			console.log(`USERS IN ROOM "${room}": ${users}`)
+		}else{
+			console.log(`USERS ON SERVER: ${users}`);
+		}
 	},
 	help : (input)=>{
 		let splitInput = input.split(' ');
@@ -43,9 +88,10 @@ const commandOBJ = {
 }
 
 const commandDesc = {
-	kick : "USAGE: kick <playername> \n ends player's session",
-	ban : "USAGE: ban <playername> \n bans player from server (ip ban)",
+	kick : "USAGE: kick [ip | player] <ip | playername> \n ends player's session",
+	ban : "USAGE: ban [ip | player] <ip | playername> \n bans player from server (ip ban)",
 	chat : "USAGE: chat <message> \n emits a chat message from the server to all clients",
+	userlist: "USAGE: userlist <room>",
 	help : "USAGE: help <command> \n gets list of commands and explains their usage"
 }
 
@@ -57,7 +103,7 @@ class CommandHandler {
 			if(input){
 				let commandHeader = input.split(' ')[0];
 				if(commandOBJ.hasOwnProperty(commandHeader)){
-					commandOBJ[commandHeader](input);
+					commandOBJ[commandHeader](input, clientList);
 				}else{
 					console.log(`COMMAND INVALID: "${commandHeader}" type 'help' to see list of commands...`);
 				}

@@ -1,0 +1,8 @@
+{
+	"maxPlayersPerIP" : "10",
+	"chatCharLimit" : "250",
+	"chatMinWait" : "2000",
+	"maxSpamAttempts" : "2",
+	"nameCharLimit" : "30",
+	"hostIP" : "::1"
+}
