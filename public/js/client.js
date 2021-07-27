@@ -94,7 +94,7 @@ class Client{
 
 		this.roomChange = (data)=>{
 			// console.log(data);
-			this.engine.renderer.setBackground(data.background)
+			this.engine.renderer.loadRoom(data.background);
 
 			this.game.gameObjects = [];
 

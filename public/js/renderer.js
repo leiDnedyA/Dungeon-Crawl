@@ -17,6 +17,13 @@ class Renderer{
 			this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 		}
 
+		this.loadRoom = (newBackground)=>{
+
+			this.playerOffset = new Vector2(0, 0);
+			this.setBackground(newBackground);
+
+		}
+
 		this.render = (gameObjects, messages)=>{
 			
 			this.clearScreen();
