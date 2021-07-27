@@ -4,5 +4,6 @@
 	"chatMinWait" : "2000",
 	"maxSpamAttempts" : "2",
 	"nameCharLimit" : "30",
+	"maxIdleMinutes" : "5",
 	"hostIP" : "::1"
 }

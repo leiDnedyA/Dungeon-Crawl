@@ -36,11 +36,12 @@ class JoinFilter {
 		}
 
 		this.filterName = (player)=>{
+			let lcName = player.name.toLowerCase();
 			for(let i in clientList){
-				if(clientList[i].name == player.name && clientList[i] != player){
+				if(clientList[i].name.toLowerCase() == lcName && clientList[i] != player){
 					if(player.ip == hostIP){
 						for(let j in clientList){
-							if(clientList[j].name == player.name && clientList[j].ip != player.ip){
+							if(clientList[j].name.toLowerCase() == lcName && clientList[j].ip != hostIP){
 								clientList[j].kick(`Ayden stole the name "${player.name}". Choose a different one`);
 							}
 						}

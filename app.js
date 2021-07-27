@@ -29,7 +29,7 @@ const commandHandler = require('./js/command_handler.js');
 const AydabConsole = require('./js/aydab_console.js');
 const JoinFilter = require('./js/join_filter.js');
 
-const configOptions = ["maxPlayersPerIP", "chatCharLimit", "chatMinWait", "maxSpamAttempts", "nameCharLimit"];
+const configOptions = ["maxPlayersPerIP", "chatCharLimit", "chatMinWait", "maxSpamAttempts", "nameCharLimit", "maxIdleMinutes"];
 
 for(let i in configOptions){
 	if(!config.hasOwnProperty(configOptions[i])){
@@ -168,6 +168,7 @@ class Player extends Client{
 		super(Math.random().toString(), socket);
 		this.position = position;
 		this.engine = engine;
+		this.afkExcempt = false; //if this is true the player can't be kicked for idle
 		this.name = "";
 		this.spamAttempts = 0; //how many messages in a row have been sent too fast
 		this.lastMessage = {
@@ -175,20 +176,31 @@ class Player extends Client{
 			time: new Date().getTime()
 		};
 		this.size = size;
+		this.lastMoveTime = new Date().getTime();
+		this.unAFK = ()=>{ //called whenever player proves they aren't AFK
+			this.lastMoveTime = new Date().getTime();
+		}
 		this.charController = new CharController(this, engine);
 		this.start = ()=>{
+			this.unAFK();
 			this.socket.on('moveRequest', (data)=>{
+				this.unAFK();
 				this.charController.setKeysDown(data);
 			})
 
 			this.socket.on('chat', (data)=>{
+				this.unAFK();
 				emitChat(this, data.message);
 			})
 
 			this.socket.on('doorRequest', (data)=>{
+				this.unAFK();
 				checkDoors(this);
 			})
 
+		}
+		this.getAFKTime = ()=>{ //checks how long player has been afk
+			return new Date().getTime() - this.lastMoveTime;
 		}
 		this.setName = (name)=>{
 			this.name = name;
