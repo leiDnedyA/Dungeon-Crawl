@@ -29,11 +29,11 @@ const commandHandler = require('./js/command_handler.js');
 const AydabConsole = require('./js/aydab_console.js');
 const JoinFilter = require('./js/join_filter.js');
 
-const configOptions = ["maxPlayersPerIP", "chatCharLimit", "chatMinWait", "maxSpamAttempts", "nameCharLimit", "maxIdleMinutes"];
+const configOptions = ["maxPlayersPerIP", "defaultPlayerSize", "chatCharLimit", "chatMinWait", "maxSpamAttempts", "nameCharLimit", "maxIdleMinutes", "playerSpeed"];
 
 for(let i in configOptions){
 	if(!config.hasOwnProperty(configOptions[i])){
-		console.error(`ERROR: config.json missing element: ${configOptions[i]}`);
+		console.error(`${chalk.red('WARNING')}: config.json missing element: ${configOptions[i]}`);
 	}
 }
 
@@ -44,6 +44,8 @@ var playerList = {}
 //config variables
 const frameRate = 30;
 const port = 80;
+const defaultPlayerSize = parseInt(config["defaultPlayerSize"]);
+const hostIP = config.hostIP;
 const engine = new Engine(frameRate, playerList);
 const chatFilter = new ChatFilter();
 const joinFilter = new JoinFilter(banList, clientList)
@@ -65,12 +67,17 @@ app.use(express.static('assets'));
 io.on('connection', (socket)=>{
 	// console.log(`user connected at IP: ${socket.handshake.address}`);
 	let startRoom = roomLoader.getStart();
-	let player = new Player(socket, engine, getStartCords(startRoom), new Vector2(40, 40)/*Eventually this is gonna have to get synced with server*/); 
+	let player = new Player(socket, engine, getStartCords(startRoom), new Vector2(defaultPlayerSize, defaultPlayerSize)/*Eventually this is gonna have to get synced with server*/); 
 	// console.log(player.position)
 	player.setIP(socket.handshake.address);
 	clientList[player.id] = player;
 	playerList[player.id] = player;
 	player.room = startRoom;
+
+	if(player.ip == hostIP){
+		// player.afkExcempt = true;
+		aydabConsole.log(`The host has joined at IP: ${chalk.cyan(player.ip)}`);
+	}
 
 	// player.position = new Vector2()
 	player.start();

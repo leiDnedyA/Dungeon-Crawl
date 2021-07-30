@@ -1,7 +1,8 @@
+const config = require('../config.json');
 const Collisions = require(__dirname + '/collision_detection.js')
 const {Vector2, addVectors} = require(__dirname + '/aydab_geometry.js')
 //object literals for input handling
-const speed = 7; // set back to 7 when done testing stuff
+const speed = parseInt(config.playerSpeed); // set back to 7 when done testing stuff
 const verticalMargin = - 2;
 const moveFactor = .01;
 const moveFuncs = {

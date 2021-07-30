@@ -82,11 +82,24 @@ class Renderer{
 			// console.log(gameObject);
 			this.ctx.fillStyle = gameObject.color;
 			let newPos = this.adjustPos(gameObject.position)
-			this.ctx.fillRect(newPos.x, newPos.y, gameObject.size.x, gameObject.size.y);
+			if(gameObject.hasOwnProperty("sprite")){
+				this.drawPlayer(gameObject, newPos.x, newPos.y);
+			}else{
+				this.ctx.fillRect(newPos.x, newPos.y, gameObject.size.x, gameObject.size.y);
+			}
 			if(gameObject instanceof Player){
 				this.ctx.font = "15px Georgia";
 				let name = gameObject.name;
 				this.ctx.fillText(name, newPos.x - (this.ctx.measureText(name).width/2)+gameObject.size.x / 2, newPos.y - 15);
+			}
+		}
+
+		this.drawPlayer = (gameObject, posX, posY)=>{
+			if(gameObject.hasOwnProperty("direction")){
+				this.ctx.drawImage(gameObject.sprite, gameObject.direction * gameObject.cellSize.x, 0, gameObject.cellSize.x, gameObject.cellSize.y, posX, posY, gameObject.size.x, gameObject.size.y)
+			}else{
+				
+				this.ctx.drawImage(gameObject.sprite, gameObject.cellSize.x, 0, gameObject.cellSize.x, gameObject.cellSize.y, posX, posY, gameObject.size.x, gameObject.size.y)
 			}
 		}
 

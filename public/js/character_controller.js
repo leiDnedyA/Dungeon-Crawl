@@ -2,8 +2,8 @@ class CharacterController{
 	constructor(player, speed = 6){
 		this.player = player;
 		this.speed = speed;
+		this.engine = window.engine;
 
-		
 		this.keyActions = {
 				'w': true,
 				'a': true,
@@ -27,18 +27,22 @@ class CharacterController{
 		}
 
 		this.handleKeyDown = (e)=>{
-			let newKey = e.key.toLowerCase();
-			if(this.keyActions.hasOwnProperty(newKey)){
-				this.keysDown[newKey] = true;
-			}
-			if(this.specialKeys.hasOwnProperty(e.code)){
-				this.specialKeys[e.code]();
+			if(this.engine.gameSelected){
+				let newKey = e.key.toLowerCase();
+				if(this.keyActions.hasOwnProperty(newKey)){
+					this.keysDown[newKey] = true;
+				}
+				if(this.specialKeys.hasOwnProperty(e.code)){
+					this.specialKeys[e.code]();
+				}
 			}
 		}
 		this.handleKeyUp = (e)=>{
-			let newKey = e.key.toLowerCase();
-			if(this.keyActions.hasOwnProperty(newKey)){
-				this.keysDown[newKey] = false;
+			if(this.engine.gameSelected){
+				let newKey = e.key.toLowerCase();
+				if(this.keyActions.hasOwnProperty(newKey)){
+					this.keysDown[newKey] = false;
+				}
 			}
 		}
 	

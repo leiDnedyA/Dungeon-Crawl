@@ -5,5 +5,7 @@
 	"maxSpamAttempts" : "2",
 	"nameCharLimit" : "30",
 	"maxIdleMinutes" : "5",
-	"hostIP" : "::1"
+	"hostIP" : "::1",
+	"playerSpeed" : "6",
+	"defaultPlayerSize" : "50"
 }

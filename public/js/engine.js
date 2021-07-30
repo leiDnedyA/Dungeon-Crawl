@@ -9,6 +9,7 @@ class Engine {
 		this.chatHandler = new ChatHandler(this, this.client, document.querySelector("#chatInput"), document.querySelector("#chatButton"));
 		this.updateFuncs = [];
 		this.ended = false; //game loop will only run if this is false. 
+		this.gameSelected = false; //tells character controller whether or not the canvas is the currently selected element
 
 		this.start = ()=>{
 			startFunc(this);
@@ -59,6 +60,14 @@ class Engine {
 		let now = Date.now();
 		this.deltaTime = now - this.lastUpdate;
 		this.lastUpdate = now;
+	}
+
+	handleGlobalClick(target){
+		if(target == this.renderer.canvas){
+			this.gameSelected = true;
+		}else{
+			this.gameSelected = false;
+		}
 	}
 
 	setPlayerName(name){

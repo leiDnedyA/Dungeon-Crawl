@@ -93,7 +93,11 @@ class Client{
 			for(let i in data){
 				let position = new Vector2(data[i].position[0], data[i].position[1]);
 				if(this.game.gameObjects.hasOwnProperty(i)){
+					let velocity = new Vector2(position.x - this.game.gameObjects[i].position.x, position.y - this.game.gameObjects[i].position.y);
+					// console.log(velocity);
+					this.game.gameObjects[i].setDirectionFromVelocity(velocity);
 					this.game.gameObjects[i].position = position;
+					console.log(this.game.gameObjects[i].direction)
 				}else if(i == this.id){
 					// console.log(data[i])
 					this.player.position = position;
