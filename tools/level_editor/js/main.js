@@ -1,31 +1,25 @@
 const canvas = document.querySelector("#canvas");
+const levelField = document.querySelector("#levelField");
+const levelSubButton = document.querySelector("#levelSubmit")
 
 const fileLoader = new FileLoader();
 const engine = new Engine(()=>{
 	canvInterface.start();
+	worldLoader.start();
 	engine.setRenderer(canvInterface);
-	pointSelector.setControlButton(controlButton);
-	pointSelector.setTargetElement(pointTargetElement);
 });
 const canvInterface = new CanvasInterface(canvas);
 const pointSelector = new PointSelector(canvas);
-
-//HTML ELEMENTS
-//for uploading background
-const uploadButton = document.querySelector("#uploadButton");
-const uploadField = document.querySelector("#imageUpload")
-//for making a list of points for polygons
-const controlButton = document.querySelector("#pointButton");
-const pointTargetElement = document.querySelector("#targetP")
+const worldLoader = new WorldLoader(levelField, levelSubButton, fileLoader);
 
 
-
-
+/* Use this later to load backgrounds
 uploadButton.addEventListener('click', ()=>{
 	fileLoader.setSrcFromUpload(uploadField, canvInterface.background, ()=>{
 		canvInterface.handleResize();
 	});
 	canvInterface.render();
 })
+*/
 
 engine.start();

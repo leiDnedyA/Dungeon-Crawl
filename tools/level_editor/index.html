@@ -8,33 +8,24 @@
 <h1>Editor</h1>
 <canvas id="canvas"></canvas>
 <br>
-<b><label for="imageUpload">Upload Background Image --></label></b>
-<input type="file" id="imageUpload" name="imageUpload">
-<br>
-<button id="uploadButton">Upload</button>
 
-<br>
+<label for="levelField">LEVEL FILE:</label>
 
-<p><b>Create a list of points for walkable areas</b></p>
-<button id="pointButton">Start List</button>
-<p id="targetP">current polygon: []</p>
+<input type="file"
+       id="levelField" name="levelField"
+       accept="application/json">
+<button id="levelSubmit">Submit</button>
 
-<br>
+<script type="text/javascript" src="./js/file_loader.js"></script>
+<script type="text/javascript" src="./js/world_loader.js"></script>
+<script type="text/javascript" src="./js/engine.js"></script>
+<script type="text/javascript" src="./js/aydab_classes.js"></script>
+<script type="text/javascript" src="./js/level_manager.js"></script>
+<script type="text/javascript" src="./js/room_creator.js"></script>
+<script type="text/javascript" src="./js/point_selector.js"></script>
+<script type="text/javascript" src="./js/canvas_interface.js"></script>
+<script type="text/javascript" src="./js/main.js"></script>
+<script type="text/javascript" src="./js/dom_classes.js"></script>
 
-<p><b>Export level JSON</b></p>
-
-<button id="exportButton">Download JSON</button>
-
-<script type="text/javascript">
-	let scriptList = ['file_loader', 'engine', 'aydab_classes', 'level_manager', 'room_creator', 'point_selector', 'canvas_interface', 'main', 'door_class'];
-
-	for(let i in scriptList){
-		let script = document.createElement('script');
-		script.setAttribute('type', 'text/javascript');
-		script.setAttribute('src', `./js/${scriptList[i]}.js`);
-		document.body.appendChild(script);
-	}
-
-</script>
 </body>
 </html>
