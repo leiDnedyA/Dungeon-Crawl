@@ -62,6 +62,7 @@ const aydabConsole = new AydabConsole(commands);
 app.use(express.static('public'));
 app.use(express.static(__dirname + '/node_modules'));  
 app.use(express.static('assets'));
+app.use(express.static(__dirname + '/tools'));
 
 //socket server setup
 io.on('connection', (socket)=>{
