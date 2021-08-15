@@ -8,9 +8,10 @@ const engine = new Engine(()=>{
 	worldLoader.start();
 	engine.setRenderer(canvInterface);
 });
+
 const canvInterface = new CanvasInterface(canvas);
 const pointSelector = new PointSelector(canvas);
-const worldLoader = new WorldLoader(levelField, levelSubButton, fileLoader);
+const worldLoader = new WorldLoader(levelField, levelSubButton, fileLoader, engine);
 
 
 /* Use this later to load backgrounds
@@ -21,5 +22,8 @@ uploadButton.addEventListener('click', ()=>{
 	canvInterface.render();
 })
 */
+
+window.worldLoader = worldLoader;
+window.engine = engine;
 
 engine.start();

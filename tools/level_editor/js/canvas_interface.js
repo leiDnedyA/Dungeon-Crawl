@@ -18,6 +18,19 @@ class CanvasInterface {
 			this.ctx.drawImage(this.background, 0, 0);
 		}
 
+		this.loadRoom = (roomOBJ)=>{
+			this.setBackground(roomOBJ.background)
+
+		}
+
+		this.setBackground = (src)=>{
+			this.background.src = src;
+
+			setTimeout(()=>{
+				this.handleResize();
+			}, 200)
+		}
+
 		this.handleResize = ()=>{
 			let innerWidth = window.innerWidth/2;
 			let innerHeight = window.innerHeight/2;
