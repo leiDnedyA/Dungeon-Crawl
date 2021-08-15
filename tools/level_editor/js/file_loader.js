@@ -15,8 +15,13 @@ class FileLoader {
 
 		}
 
-		this.exportJSON = ()=>{
-			
+		this.exportJSON = (obj)=>{
+			let name = obj.name;
+			let json = JSON.stringify(obj);
+			let blob = new Blob([json], {type: "application/json"});
+			let url = URL.createObjectURL(blob);
+
+			saveAs(blob, name);
 		}
 
 	}

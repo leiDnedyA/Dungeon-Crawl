@@ -1,12 +1,15 @@
 
+//to get to room folder
 const srcRegex = /\/img\/rooms\//
+const srcString = '/img/rooms/'
 
 class RoomDOMObject {
-	constructor(roomOBJ, parentElement, worldOBJ, engine){
+	constructor(roomOBJ, parentElement, worldOBJ, engine, fileLoader){
 		this.roomOBJ = roomOBJ;
 		this.parentElement = parentElement;
 		this.worldOBJ = worldOBJ;
 		this.engine = engine;
+		this.fileLoader = fileLoader;
 
 		//putting together main DOM object
 		this.domElement = document.createElement("div");
@@ -144,7 +147,11 @@ class RoomFunctionsOBJ {
 		this.loadRoomButton = document.createElement("button");
 		this.loadRoomButton.innerHTML = "Load Room";
 
-		this.buttonList = [this.loadRoomButton];
+		//delete room button
+		this.deleteRoomButton = document.createElement("button");
+		this.deleteRoomButton.innerHTML = "Delete Room";
+
+		this.buttonList = [this.loadRoomButton, this.deleteRoomButton];
 
 		this.init = ()=>{
 			this.loadRoomButton.addEventListener("click", ()=>{ //loads room into renderer (and other stuff in future)
@@ -205,5 +212,5 @@ const cutSRC = (longVersion)=>{ //converts raw src to correct one for input fiel
 }
 
 const expandSRC = (shortVersion)=>{ //adds directory to src
-	return srcRegex.toString() + shortVersion;
+	return srcString + shortVersion;
 }

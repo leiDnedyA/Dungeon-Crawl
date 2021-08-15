@@ -8,6 +8,7 @@ class WorldLoader {
 		this.engine = engine;
 		this.levelLabel = document.querySelector("#levelLabel");
 		this.roomContainer = document.querySelector("#roomContainer");
+		this.downloadButton = document.querySelector("#levelDownload");
 		this.levelName = "";
 		this.roomList = null;
 
@@ -20,9 +21,18 @@ class WorldLoader {
 					console.log("Level loaded successfully");
 					console.log(this.levelOBJ);
 
+					this.init();
+
 				})
 
 			})
+		}
+
+		this.init = ()=>{
+			this.downloadButton.disabled = false;
+			this.downloadButton.addEventListener("click", ()=>{
+				this.fileLoader.exportJSON(this.levelOBJ);
+			});
 		}
 
 		this.loadLevel = (levelOBJ)=>{
@@ -60,7 +70,7 @@ class WorldLoader {
 			console.log(roomList)
 			this.roomList = roomList;
 			for(let i in roomList){
-				let roomObject = new RoomDOMObject(roomList[i], this.roomContainer, this.levelOBJ, this.engine);
+				let roomObject = new RoomDOMObject(roomList[i], this.roomContainer, this.levelOBJ, this.engine, this.fileLoader);
 				roomObject.init();
 			}
 		}
