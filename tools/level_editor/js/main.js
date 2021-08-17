@@ -6,6 +6,7 @@ const fileLoader = new FileLoader();
 const engine = new Engine(()=>{
 	canvInterface.start();
 	worldLoader.start();
+	engine.setWorldLoader(worldLoader);
 	engine.setRenderer(canvInterface);
 });
 

@@ -142,6 +142,7 @@ class RoomFunctionsOBJ {
 		//reference to parent instance of RoomDOMObject
 		this.main = main;
 		this.engine = engine;
+		this.editorInterface = engine.editorInterface;
 
 		//this button will load the room onto the screen
 		this.loadRoomButton = document.createElement("button");
@@ -155,7 +156,7 @@ class RoomFunctionsOBJ {
 
 		this.init = ()=>{
 			this.loadRoomButton.addEventListener("click", ()=>{ //loads room into renderer (and other stuff in future)
-				this.engine.renderer.loadRoom(this.main.roomOBJ);
+				this.editorInterface.loadRoom(this.main.roomOBJ);
 			});
 		}
 
@@ -182,9 +183,31 @@ class BGLoader { //generates the HTML elements to load backgrounds for each leve
 		this.init = ()=>{
 			this.roomOBJ = this.main.getRoomOBJ();
 			this.fileNameInput.value = cutSRC(this.roomOBJ.background);
-			this.setButton.addEventListener("click", (e)=>{ //
-				this.main.roomOBJ.background = expandSRC(this.fileNameInput.value);
+			this.setButton.addEventListener("click", ()=>{ //
+				let e = expandSRC(this.fileNameInput.value);
+				this.checkImageFirst(e, ()=>{
+					this.main.roomOBJ.background = e;
+				})
 			})
+		}
+
+		this.checkImageFirst = (src, callback)=>{
+			let http = new XMLHttpRequest();
+
+			http.open('HEAD', src, false);
+			
+			http.addEventListener("load", (e)=>{
+				console.log(`Level bg successfully changed to '${cutSRC(src)}'`)
+				callback();
+			});
+
+			http.addEventListener("error", (e)=>{
+				console.error("La imagen no existe");
+			});
+
+			http.send(null);
+
+
 		}
 
 		this.getElementList = ()=>{
@@ -208,9 +231,11 @@ const makeTD = (elements)=>{
 }
 
 const cutSRC = (longVersion)=>{ //converts raw src to correct one for input field
-	return longVersion.replace(srcRegex, "");
+	if(srcRegex.test(longVersion))
+		return longVersion.replace(srcRegex, "");
+	return ""
 }
 
 const expandSRC = (shortVersion)=>{ //adds directory to src
-	return srcString + shortVersion;
+	return srcString + String(shortVersion);
 }

@@ -9,8 +9,11 @@ class WorldLoader {
 		this.levelLabel = document.querySelector("#levelLabel");
 		this.roomContainer = document.querySelector("#roomContainer");
 		this.downloadButton = document.querySelector("#levelDownload");
+		this.changeLevelName = document.querySelector("#changeLevelName");
+		this.newRoomButton = document.querySelector("#newRoom")
 		this.levelName = "";
 		this.roomList = null;
+		this.editorInterface = null; //has to be set on init
 
 		this.levelOBJ = null; //where level data is stored
 
@@ -28,11 +31,22 @@ class WorldLoader {
 			})
 		}
 
-		this.init = ()=>{
+		this.init = ()=>{ //sets up all the buttons and stuff
 			this.downloadButton.disabled = false;
+			this.changeLevelName.disabled = false;
+			this.newRoomButton.disabled = false;
 			this.downloadButton.addEventListener("click", ()=>{
 				this.fileLoader.exportJSON(this.levelOBJ);
 			});
+			this.changeLevelName.addEventListener("input", ()=>{
+				this.setLevelName(this.changeLevelName.value);
+			})
+			this.newRoomButton.addEventListener("click", ()=>{
+				this.newRoom();
+			})
+
+			this.editorInterface = this.engine.editorInterface;
+
 		}
 
 		this.loadLevel = (levelOBJ)=>{
@@ -54,8 +68,10 @@ class WorldLoader {
 		}
 
 		this.setLevelName = (newName)=>{
+			this.levelOBJ.name = String(newName);
 			this.levelName = newName;
 			this.levelLabel.innerHTML = `<i>${this.levelName}</i>`;
+			this.changeLevelName.value = this.levelName;
 		}
 
 		this.setEngine = (engine)=>{
@@ -66,13 +82,30 @@ class WorldLoader {
 			this.roomContainer.innerHTML = "";
 		}
 
-		this.loadRooms = (roomList)=>{
+		this.loadRooms = (roomList)=>{ //loads entire list of rooms, single rooms are loaded with the onclick method for the "load" buttons
 			console.log(roomList)
 			this.roomList = roomList;
 			for(let i in roomList){
 				let roomObject = new RoomDOMObject(roomList[i], this.roomContainer, this.levelOBJ, this.engine, this.fileLoader);
 				roomObject.init();
 			}
+		}
+
+		this.newRoom = ()=>{
+
+			let defaultName = "New Room";
+			let i = 0;
+			while(this.levelOBJ.hasOwnProperty(`${defaultName} (${i})`)){
+				i++;
+			}
+
+			let fullName = `${defaultName} (${i})`;
+
+			this.levelOBJ.rooms[fullName] = new Room(fullName);
+
+			this.refreshLevel();
+
+
 		}
 
 	}

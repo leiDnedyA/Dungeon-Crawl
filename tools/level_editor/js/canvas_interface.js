@@ -1,4 +1,8 @@
 
+//I really should have just called this renderer.js holy shit
+
+const defBGSRC = "/res/default.png"
+
 class CanvasInterface {
 	constructor(canvas){
 		this.canvas = canvas;
@@ -13,9 +17,34 @@ class CanvasInterface {
 			this.handleResize();
 		}
 
-		this.render = (gameObjects, points)=>{
+		this.render = (gameObjects)=>{
+			this.ctx.fillStyle = "#ffffff"
+			this.ctx.globalAlpha = 1;
 			this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
 			this.ctx.drawImage(this.background, 0, 0);
+			for(let i in gameObjects){
+				if(gameObjects[i].enabled){
+					if(gameObjects[i] instanceof PolygonObject){
+						this.drawShape(gameObjects[i]);
+					}
+				}
+			}
+		}
+
+		this.drawShape = (gameObject)=>{
+			let points = gameObject.points;
+			this.ctx.fillStyle = gameObject.color.hex;
+			this.ctx.globalAlpha = gameObject.color.alpha;
+			this.ctx.moveTo(...gameObject.points[0]);
+			for(let i = 1; i < gameObject.points.length; i++){
+				this.ctx.lineTo(...gameObject.points[i]);
+			}
+			this.ctx.closePath()
+			this.ctx.fill();
+		}
+
+		this.drawRect = (gameObject)=>{
+
 		}
 
 		this.loadRoom = (roomOBJ)=>{
