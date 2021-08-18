@@ -22,10 +22,18 @@ class CanvasInterface {
 			this.ctx.globalAlpha = 1;
 			this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
 			this.ctx.drawImage(this.background, 0, 0);
+			this.renderObjects(gameObjects);
+		}
+
+		this.renderObjects = (gameObjects)=>{
 			for(let i in gameObjects){
-				if(gameObjects[i].enabled){
-					if(gameObjects[i] instanceof PolygonObject){
-						this.drawShape(gameObjects[i]);
+				if(Array.isArray(gameObjects[i])){
+					this.renderObjects(gameObjects[i])
+				}else{
+					if(gameObjects[i].enabled){
+						if(gameObjects[i] instanceof PolygonObject){
+							this.drawShape(gameObjects[i]);
+						}
 					}
 				}
 			}
@@ -35,6 +43,7 @@ class CanvasInterface {
 			let points = gameObject.points;
 			this.ctx.fillStyle = gameObject.color.hex;
 			this.ctx.globalAlpha = gameObject.color.alpha;
+			this.ctx.beginPath();
 			this.ctx.moveTo(...gameObject.points[0]);
 			for(let i = 1; i < gameObject.points.length; i++){
 				this.ctx.lineTo(...gameObject.points[i]);
@@ -44,7 +53,10 @@ class CanvasInterface {
 		}
 
 		this.drawRect = (gameObject)=>{
-
+			// console.log(gameObject)
+			this.ctx.fillStyle = gameObject.color.hex;
+			this.ctx.globalAlpha = gameObject.color.alpha;
+			this.ctx.fillRect(gameObject.position[0], gameObject.position[1], gameObject.size[0], gameObject.size[1]);
 		}
 
 		this.loadRoom = (roomOBJ)=>{

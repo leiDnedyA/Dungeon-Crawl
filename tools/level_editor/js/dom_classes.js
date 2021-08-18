@@ -96,18 +96,19 @@ class DoorDOMObject {
 		this.parentElement = parentElement;
 		this.doorOBJ = doorOBJ;
 
-		this.position = this.doorOBJ.position;
+		// this.position = this.doorOBJ.position;
+		this.box = this.doorOBJ.box;
 		this.destination = this.doorOBJ.destination;
 		this.isLocked = this.doorOBJ.isLocked;
-		this.size = this.doorOBJ.size;
+		// this.size = this.doorOBJ.size;
 
 		//creates the DOM element that all of the children elements will work within
 		this.domElement = document.createElement("tr");
 		this.titleElement = document.createElement("td")
 		/*this.posButtonElement = document.createElement("button");*/
-		this.posTextElement = document.createElement("td");
-
-		this.elementsList = [this.titleElement, /*this.posButtonElement,*/ this.posTextElement];
+		this.boxElement = document.createElement("td");
+		
+		this.elementsList = [this.titleElement, this.boxElement];
 
 		this.init = ()=>{
 
@@ -117,9 +118,8 @@ class DoorDOMObject {
 			
 			/* this.posButtonElement.innerHTML = "set position"; */
 
-			this.posTextElement.innerHTML = `position: [${this.position}]`;
+			this.boxElement.innerHTML = `box: [${this.box}]`;
 			
-
 			/* this.posButtonElement.addEventListener("click", ()=>{
 				console.log("posButton clicked")
 				this.posTextElement.innerHTML = this.position;

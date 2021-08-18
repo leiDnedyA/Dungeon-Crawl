@@ -28,6 +28,7 @@ const banList = require('./banned_users.json')
 const commandHandler = require('./js/command_handler.js');
 const AydabConsole = require('./js/aydab_console.js');
 const JoinFilter = require('./js/join_filter.js');
+const Collision = require('./js/collision_detection.js');
 
 const configOptions = ["maxPlayersPerIP", "defaultPlayerSize", "chatCharLimit", "chatMinWait", "maxSpamAttempts", "nameCharLimit", "maxIdleMinutes", "playerSpeed"];
 
@@ -243,10 +244,14 @@ const checkDoors = (player)=>{ //handles requests to go thru door
 	let currentRoom = roomLoader.getRoom(player.room);
 	for(let i in currentRoom.doors){
 		let currDoor = currentRoom.doors[i];
-		let doorPos = vectorIfy(currDoor.position);
-		let doorSize = parseInt(currDoor.size);
-		let distanceToDoor = new Vector2(player.position.x - doorPos.x, player.position.y - doorPos.y);
-		if(distanceToDoor.x <= currDoor.size && distanceToDoor.y <= currDoor.size){
+		// let doorPos = vectorIfy(currDoor.position);
+		// let doorSize = vectorIfy(currDoor.size);
+		// let distanceToDoor = new Vector2(player.position.x - doorPos.x, player.position.y - doorPos.y);
+		let doorPolygon = parseIntPoints(currDoor.box);
+		// console.log(doorPolygon)
+		// console.log(vec2ToPoint(player.position))
+		// console.log(Collision.pointInPolygon(vec2ToPoint(player.position), doorPolygon));
+		if(Collision.pointInPolygon(vec2ToPoint(player.position), doorPolygon)){
 			emitRoomExit(player, currentRoom.name, clientList);
 			player.room = currDoor.destination;
 			emitRoom(player);
@@ -344,9 +349,21 @@ const getStartCords = (roomName)=>{
 	return vectorIfy(roomLoader.getRoom(roomName).startPos)
 }
 
+const parseIntPoints = (pointList)=>{
+	
+	return pointList.map((e)=>{
+		return [parseInt(e[0]), parseInt(e[1])]
+	})
+
+}
+
 const vectorIfy = (list)=>{
 	let newList = list.map(i=>parseInt(i));
 	return new Vector2(newList[0], newList[1])
+}
+
+const vec2ToPoint = (vec2)=>{
+	return [vec2.x, vec2.y]
 }
 
 const getTimeStamp = ()=>{
