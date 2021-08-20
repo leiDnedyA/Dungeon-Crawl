@@ -101,7 +101,7 @@ class WorldLoader {
 
 			let defaultName = "New Room";
 			let i = 0;
-			while(this.levelOBJ.hasOwnProperty(`${defaultName} (${i})`)){
+			while(this.levelOBJ.rooms.hasOwnProperty(`${defaultName} (${i})`)){
 				i++;
 			}
 

@@ -1,6 +1,6 @@
 
 class Room {
-	constructor(name, walkablePolygon, background, startPos = [0, 0], doors = []){
+	constructor(name, walkablePolygon = [[0, 0]], background, startPos = [0, 0], doors = []){
 		this.name = name;
 		this.walkable = {
 			main : walkablePolygon

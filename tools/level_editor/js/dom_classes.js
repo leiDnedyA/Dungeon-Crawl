@@ -2,6 +2,7 @@
 //to get to room folder
 const srcRegex = /\/img\/rooms\//
 const srcString = '/img/rooms/'
+const defNewPoint = [10, 10] //default position for when a new point is added to a polygon
 
 class RoomDOMObject {
 	constructor(roomOBJ, parentElement, worldOBJ, engine, fileLoader){
@@ -85,6 +86,11 @@ class RoomDOMObject {
 			this.parentElement.appendChild(this.domElement);
 		}
 
+		this.moveToTop = ()=>{ //moves dom element to top of list of rooms
+			this.parentElement.removeChild(this.domElement);
+			this.parentElement.prepend(this.domElement);
+		}
+
 		this.getElement = ()=>{
 			return this.domElement;
 		}
@@ -117,7 +123,7 @@ class DoorDOMObject {
 		/*this.posButtonElement = document.createElement("button");*/
 		this.boxElement = document.createElement("td");
 		
-		this.polygonDOMElement = new PolygonDOMElement(this.box, this.boxElement, 'box', this.renderer);
+		this.polygonDOMElement = new PolygonDOMElement(this.box, this.boxElement, '', this.renderer);
 
 		this.elementsList = [this.titleElement, this.boxElement];
 
@@ -169,6 +175,7 @@ class RoomFunctionsOBJ {
 		this.init = ()=>{
 			this.loadRoomButton.addEventListener("click", ()=>{ //loads room into renderer (and other stuff in future)
 				this.editorInterface.loadRoom(this.main.roomOBJ);
+				this.main.moveToTop();
 			});
 		}
 
@@ -180,29 +187,38 @@ class RoomFunctionsOBJ {
 }
 
 class PolygonDOMElement {
-	constructor(polygon, parentElement, title = "polygon", renderer){
+	constructor(polygon, parentElement, title = "", renderer){
 		this.polygon = parseIntPoints(polygon);
 		this.parentPolygon = polygon;
 		this.parentElement = parentElement;
 		this.title = title;
-		this.greenClass = "selectedPointContainer";
 		this.renderer = renderer;
 		// this.renderer = null; //needs to be set with setRenderer
 
 		this.mainDiv = document.createElement("div");
 		this.textElement = document.createElement("p");
 
+		this.newPointButton = document.createElement("button");
+		this.newPointButton.innerHTML = "New Point"
+
 		this.setRenderer = (renderer)=>{
 			this.renderer = renderer;
 			// console.log(renderer)
 		}
 
+		this.newPoint = (point)=>{
+			console.log(this.polygon)
+			this.polygon.push(point)
+			this.parentPolygon.push([String(point[0]), String(point[1])]);
+			this.mainDiv.innerHTML = "";
+			this.init();
+		}
+
 		this.init = ()=>{
 
-			this.textElement.innerHTML = `${title}: ${this.polygon.map((e)=>{
-				return `[${e[0]}, ${e[1]}] `
-			})}`;
-
+			if (title.length > 0){
+				this.textElement.innerHTML = `${title}: `;	
+			}
 			/* this creates a single p element with all of the points' coordinates
 			this.textElement.innerHTML = `${title}: ${this.polygon.map((e)=>{
 				return `[${e[0]}, ${e[1]}] `
@@ -216,44 +232,49 @@ class PolygonDOMElement {
 				let pointContainer = document.createElement("div");
 				pointContainer.setAttribute("class", "pointContainer");
 
+				let deleteButton = document.createElement("button");
+				deleteButton.innerHTML = "Delete Point";
+
+				deleteButton.addEventListener("click", ()=>{
+					let confirmAction = confirm(`Are you sure you want to delete this point?`);
+					if(confirmAction){
+						this.polygon.splice(i, 1);
+						this.parentPolygon.splice(i, 1);
+						pointContainer.remove();
+						this.inputList.splice(i, 1)
+						for(let f in this.inputList){
+							this.inputList[f].updateIndex(f);
+						}
+					}
+				})
+
 				let coords = this.polygon[i];
 
-				let inputList = [];
+				this.inputList = [];
 
 				for(let j in coords){
-					let numInput = document.createElement("input");
+					let numInput = new NumInputElement(pointContainer, coords[j], this.parentPolygon, this.polygon, [i, j], this.renderer);
 					
-					inputList.push(numInput);
+					numInput.init()
 
-					numInput.setAttribute("type", "number");
-					numInput.setAttribute("class", "coordInput")
-					numInput.value = coords[j];
-					// console.log(this.renderer)
-					numInput.addEventListener("click", ()=>{
-						// console.log(this.renderer)
-						pointContainer.classList.add(this.greenClass);
-						this.renderer.setSelectedPoint(this.polygon[i], (newPoint)=>{
-							this.parentPolygon[i] = [String(newPoint[0]), String(newPoint[1])];
-							this.polygon[i] = newPoint;
-							
-							for(let q in inputList){
-								inputList[q].value = newPoint[q];
-							}
+					this.inputList.push(numInput);
 
-							console.log(this.parentPolygon[i])
-						}, ()=>{
-							pointContainer.classList.remove(this.greenClass)
-						});
-					})
-
-					pointContainer.appendChild(numInput);
+					pointContainer.appendChild(numInput.getDomElement());
 
 				}
+
+				pointContainer.appendChild(deleteButton);
 
 				this.mainDiv.appendChild(pointContainer);
 			}
 
+			this.mainDiv.appendChild(this.newPointButton)
+
 			this.parentElement.appendChild(this.mainDiv);
+
+			this.newPointButton.addEventListener("click", ()=>{
+				this.newPoint(defNewPoint)
+			});
 		}
 
 		this.getStringPolygon = ()=>{
@@ -267,6 +288,64 @@ class PolygonDOMElement {
 	}
 }
 
+class NumInputElement {
+	constructor(parentElement, defaultValue, parentPolygon, polygon, index, renderer){
+		this.parentElement = parentElement;
+		this.defaultValue = defaultValue;
+		this.parentPolygon = parentPolygon;
+		this.polygon = polygon;
+		this.index = index; //format : [coordinates for pair, coordinate within pair]
+		this.renderer = renderer;
+
+		this.greenClass = "selectedPointContainer";
+
+		this.domElement = document.createElement("input");
+
+		this.init = ()=>{
+			this.domElement.setAttribute("type", "number");
+			this.domElement.setAttribute("class", "coordInput")
+			this.domElement.value = this.polygon[this.index[0]][this.index[1]];
+			// console.log(this.polygon)
+			// console.log(this.index)
+			// console.log(this.renderer)
+			this.domElement.addEventListener("click", ()=>{
+				// console.log(this.renderer)
+				if(!parentElement.classList.contains(this.greenClass)){
+					parentElement.classList.add(this.greenClass);
+				}
+				this.renderer.setSelectedPoint(this.polygon[this.index[0]], (newPoint)=>{
+					this.parentPolygon[this.index[0]] = [String(newPoint[0]), String(newPoint[1])];
+					this.polygon[this.index[0]] = newPoint;
+					
+					for(let i in this.parentElement.childNodes){
+						if(i == 0 || i == 1){
+							this.parentElement.childNodes[i].value = newPoint[i];
+						}
+					}
+
+				}, ()=>{
+					this.parentElement.classList.remove(this.greenClass)
+				});
+			})
+			this.domElement.addEventListener("change", ()=>{
+				this.parentPolygon[this.index[0]][this.index[1]] = String(this.domElement.value);
+				this.polygon[index[0]][index[1]] = this.domElement.value;
+				this.domElement.click()
+			})
+
+		}
+
+		this.updateIndex = (newIndex)=>{
+			this.index[0] = newIndex;
+
+			this.domElement.value = this.polygon[this.index[0]][this.index[1]];
+		}
+
+		this.getDomElement = ()=>{
+			return this.domElement;
+		}
+	}
+}
 
 class BGLoader { //generates the HTML elements to load backgrounds for each level
 	constructor(main){
@@ -343,9 +422,16 @@ const expandSRC = (shortVersion)=>{ //adds directory to src
 
 const parseIntPoints = (pointList)=>{
 	
-	return pointList.map((e)=>{
-		return [parseInt(e[0]), parseInt(e[1])]
-	})
+
+
+	if(pointList){
+		return pointList.map((e)=>{
+			return [parseInt(e[0]), parseInt(e[1])]
+		})
+	}else{
+		console.error("")
+		return [0, 0]
+	}
 
 }
 
