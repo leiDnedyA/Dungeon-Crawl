@@ -9,6 +9,7 @@ class RoomDOMObject {
 		this.parentElement = parentElement;
 		this.worldOBJ = worldOBJ;
 		this.engine = engine;
+		this.renderer = this.engine.renderer;
 		this.fileLoader = fileLoader;
 
 		//putting together main DOM object
@@ -22,6 +23,10 @@ class RoomDOMObject {
 		this.mainTableElement = document.createElement("table");
 		this.domElement.appendChild(this.mainTableElement);
 		
+		//walkable area stuff
+		this.walkableAreaElement = document.createElement("div");
+		this.walkableAreaOBJ = new PolygonDOMElement(this.roomOBJ.walkable.main, this.walkableAreaElement, "Walkable Area");
+
 		//door stuff(gets set up more in this.init)
 		this.doorTableElement = document.createElement("table");
 		this.doorContainerList = [];		
@@ -35,9 +40,10 @@ class RoomDOMObject {
 		//container for all the stuff thats going into the main table
 		this.mainTableContents = {
 			"title" : this.titleElement,
-			"doors" : this.doorTableElement,
-			"background" : this.bgLoader.getElementList(),
 			"functions" : this.functionsOBJ.getButtonList(),
+			"doors" : this.doorTableElement,
+			"walkable area" : this.walkableAreaElement,
+			"background" : this.bgLoader.getElementList(),
 		};
 
 
@@ -45,6 +51,8 @@ class RoomDOMObject {
 
 			this.bgLoader.init()
 			this.functionsOBJ.init();
+			this.walkableAreaOBJ.setRenderer(this.engine.getRenderer());
+			this.walkableAreaOBJ.init();
 
 			//loading all door stuff
 			this.doorTableElement.innerHTML = "";
@@ -53,7 +61,7 @@ class RoomDOMObject {
 			this.doorTableElement.appendChild(headerRow);
 
 			for(let i in this.roomOBJ.doors){
-				let doorContainer = new DoorDOMObject(this.roomOBJ.doors[i], this.doorTableElement);
+				let doorContainer = new DoorDOMObject(this.roomOBJ.doors[i], this.doorTableElement, this.renderer);
 				this.doorContainerList.push(doorContainer);
 				doorContainer.init();
 			}
@@ -92,7 +100,7 @@ class RoomDOMObject {
 }
 
 class DoorDOMObject {
-	constructor(doorOBJ, parentElement){
+	constructor(doorOBJ, parentElement, renderer){
 		this.parentElement = parentElement;
 		this.doorOBJ = doorOBJ;
 
@@ -100,6 +108,7 @@ class DoorDOMObject {
 		this.box = this.doorOBJ.box;
 		this.destination = this.doorOBJ.destination;
 		this.isLocked = this.doorOBJ.isLocked;
+		this.renderer = renderer;
 		// this.size = this.doorOBJ.size;
 
 		//creates the DOM element that all of the children elements will work within
@@ -108,6 +117,8 @@ class DoorDOMObject {
 		/*this.posButtonElement = document.createElement("button");*/
 		this.boxElement = document.createElement("td");
 		
+		this.polygonDOMElement = new PolygonDOMElement(this.box, this.boxElement, 'box', this.renderer);
+
 		this.elementsList = [this.titleElement, this.boxElement];
 
 		this.init = ()=>{
@@ -118,8 +129,9 @@ class DoorDOMObject {
 			
 			/* this.posButtonElement.innerHTML = "set position"; */
 
-			this.boxElement.innerHTML = `box: [${this.box}]`;
-			
+
+			this.polygonDOMElement.init();
+
 			/* this.posButtonElement.addEventListener("click", ()=>{
 				console.log("posButton clicked")
 				this.posTextElement.innerHTML = this.position;
@@ -166,6 +178,95 @@ class RoomFunctionsOBJ {
 
 	}
 }
+
+class PolygonDOMElement {
+	constructor(polygon, parentElement, title = "polygon", renderer){
+		this.polygon = parseIntPoints(polygon);
+		this.parentPolygon = polygon;
+		this.parentElement = parentElement;
+		this.title = title;
+		this.greenClass = "selectedPointContainer";
+		this.renderer = renderer;
+		// this.renderer = null; //needs to be set with setRenderer
+
+		this.mainDiv = document.createElement("div");
+		this.textElement = document.createElement("p");
+
+		this.setRenderer = (renderer)=>{
+			this.renderer = renderer;
+			// console.log(renderer)
+		}
+
+		this.init = ()=>{
+
+			this.textElement.innerHTML = `${title}: ${this.polygon.map((e)=>{
+				return `[${e[0]}, ${e[1]}] `
+			})}`;
+
+			/* this creates a single p element with all of the points' coordinates
+			this.textElement.innerHTML = `${title}: ${this.polygon.map((e)=>{
+				return `[${e[0]}, ${e[1]}] `
+			})}`;
+			*/
+			
+			this.mainDiv.appendChild(this.textElement);
+
+			for(let i in this.polygon){
+				// console.log(this.polygon[i])
+				let pointContainer = document.createElement("div");
+				pointContainer.setAttribute("class", "pointContainer");
+
+				let coords = this.polygon[i];
+
+				let inputList = [];
+
+				for(let j in coords){
+					let numInput = document.createElement("input");
+					
+					inputList.push(numInput);
+
+					numInput.setAttribute("type", "number");
+					numInput.setAttribute("class", "coordInput")
+					numInput.value = coords[j];
+					// console.log(this.renderer)
+					numInput.addEventListener("click", ()=>{
+						// console.log(this.renderer)
+						pointContainer.classList.add(this.greenClass);
+						this.renderer.setSelectedPoint(this.polygon[i], (newPoint)=>{
+							this.parentPolygon[i] = [String(newPoint[0]), String(newPoint[1])];
+							this.polygon[i] = newPoint;
+							
+							for(let q in inputList){
+								inputList[q].value = newPoint[q];
+							}
+
+							console.log(this.parentPolygon[i])
+						}, ()=>{
+							pointContainer.classList.remove(this.greenClass)
+						});
+					})
+
+					pointContainer.appendChild(numInput);
+
+				}
+
+				this.mainDiv.appendChild(pointContainer);
+			}
+
+			this.parentElement.appendChild(this.mainDiv);
+		}
+
+		this.getStringPolygon = ()=>{
+			return parseStringPoints(this.polygon);
+		}
+
+		this.getPolygon = ()=>{
+			return this.polygon;
+		}
+
+	}
+}
+
 
 class BGLoader { //generates the HTML elements to load backgrounds for each level
 	constructor(main){
@@ -238,4 +339,18 @@ const cutSRC = (longVersion)=>{ //converts raw src to correct one for input fiel
 
 const expandSRC = (shortVersion)=>{ //adds directory to src
 	return srcString + String(shortVersion);
+}
+
+const parseIntPoints = (pointList)=>{
+	
+	return pointList.map((e)=>{
+		return [parseInt(e[0]), parseInt(e[1])]
+	})
+
+}
+
+const parseStringPoints = (pointList)=>{
+	return pointList.map((e)=>{
+		return [`${e[0]}`, `${e[1]}`]
+	})	
 }

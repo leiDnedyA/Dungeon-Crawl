@@ -3,6 +3,8 @@
 
 const defBGSRC = "/res/default.png"
 
+const selectedPointColor = "#f50000"
+
 class CanvasInterface {
 	constructor(canvas){
 		this.canvas = canvas;
@@ -11,9 +13,24 @@ class CanvasInterface {
 
 		this.offset = [0, 0];
 
+		this.selectedPoint = {
+			enabled : false,
+			point : null,
+			callback : null,
+			endCallback : null,
+		}
+
 		this.start = ()=>{
 			this.canvas.style["border-style"] = "solid"
 			window.addEventListener('resize', this.handleResize)
+			this.canvas.addEventListener("click", (e)=>{
+				if(this.selectedPoint.enabled){
+					let rect = e.target.getBoundingClientRect();
+					let p = [e.clientX - rect.left, e.clientY - rect.top]; //has to adjust relative to pos of canvas
+					this.selectedPoint.callback(p);
+					this.selectedPoint.point = p;
+				}
+			})
 			this.handleResize();
 		}
 
@@ -23,6 +40,9 @@ class CanvasInterface {
 			this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
 			this.ctx.drawImage(this.background, 0, 0);
 			this.renderObjects(gameObjects);
+			if(this.selectedPoint.enabled){
+				this.drawPoint(this.selectedPoint.point, selectedPointColor);
+			}
 		}
 
 		this.renderObjects = (gameObjects)=>{
@@ -39,6 +59,20 @@ class CanvasInterface {
 			}
 		}
 
+		this.drawPoint = (point, color)=>{
+			this.drawCircle(point, 5, color);
+		}
+
+		this.setSelectedPoint = (point, callback, endCallback)=>{
+			if(this.selectedPoint.endCallback){
+				this.selectedPoint.endCallback();
+			}
+			this.selectedPoint.point = point;
+			this.selectedPoint.callback = callback;
+			this.selectedPoint.endCallback = endCallback
+			this.selectedPoint.enabled = true;
+		}
+
 		this.drawShape = (gameObject)=>{
 			let points = gameObject.points;
 			this.ctx.fillStyle = gameObject.color.hex;
@@ -50,6 +84,16 @@ class CanvasInterface {
 			}
 			this.ctx.closePath()
 			this.ctx.fill();
+		}
+
+		this.drawCircle = (pos, radius, color, alpha = 1)=>{
+			this.ctx.fillStyle = color;
+			this.ctx.globalAlpha = alpha;
+			this.ctx.beginPath();
+			this.ctx.arc(pos[0], pos[1], radius, 0, 2 * Math.PI, false);
+			this.ctx.closePath()
+			this.ctx.fill()
+
 		}
 
 		this.drawRect = (gameObject)=>{

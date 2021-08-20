@@ -45,8 +45,6 @@ class WorldLoader {
 				this.newRoom();
 			})
 
-			this.editorInterface = this.engine.editorInterface;
-
 		}
 
 		this.loadLevel = (levelOBJ)=>{
@@ -57,6 +55,8 @@ class WorldLoader {
 			this.setLevelName(this.levelOBJ.name);
 
 			this.loadRooms(this.levelOBJ.rooms);
+
+			this.editorInterface.loadRoom(this.levelOBJ.rooms[this.levelOBJ.startRoom])
 
 		}
 
@@ -78,6 +78,10 @@ class WorldLoader {
 			this.engine = engine;
 		}
 
+		this.setEditorInterface = (editorInterface)=>{
+			this.editorInterface = editorInterface;
+		}
+
 		this.clearPage = ()=>{
 			this.roomContainer.innerHTML = "";
 		}
@@ -89,6 +93,8 @@ class WorldLoader {
 				let roomObject = new RoomDOMObject(roomList[i], this.roomContainer, this.levelOBJ, this.engine, this.fileLoader);
 				roomObject.init();
 			}
+
+
 		}
 
 		this.newRoom = ()=>{

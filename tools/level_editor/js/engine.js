@@ -22,12 +22,17 @@ class Engine {
 		this.start = ()=>{ //also init
 			this.startFunc();
 			this.editorInterface = new EditorInterface(this.renderer)
+			this.worldLoader.setEditorInterface(this.editorInterface)
 			setInterval(this.updFunc, 1000/this.frameRate)
 		}
 
 		this.setRenderer = (r)=>{
 			this.renderer = r;
 			this.addUpdFunc(()=>{r.render(this.editorInterface.gameObjects)});
+		}
+
+		this.getRenderer = ()=>{
+			return this.renderer;
 		}
 
 		this.setWorldLoader = (w)=>{

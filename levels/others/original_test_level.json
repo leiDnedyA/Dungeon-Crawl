@@ -1,0 +1,59 @@
+{
+	"name" : "test level",
+	"startRoom" : "diner",
+	"rooms" : {
+		"diner" : {
+			"name" : "diner",
+			"id" : "000",
+			"startPos" : ["219", "390"],
+			"walkable" : {
+				"main" :   [["43", "514"], ["146", "319"], ["220", "320"], ["217", "295"], ["277", "296"], ["322", "321"], ["394", "313"], ["459", "322"], ["1013", "420"], ["1013", "514"], ["1013", "514"], ["-1", "516"]]
+			},
+			"background" : "/img/rooms/diner.png",
+			"doors" : [
+				{
+					"isLocked" : "false",
+					"destination" : "big_door",
+					"box" : [["250", "308"], ["300", "308"], ["300", "350"], ["250", "350"]]
+				},
+				{
+					"isLocked" : "false",
+					"destination" : "rembrandt",
+					"box" : [["400", "300"], ["450", "300"], ["450", "350"], ["400", "350"]]
+				}
+			]
+		},
+		"big_door" : {
+			"name" : "big_door",
+			"id" : "001",
+			"startPos" : ["306", "424"],
+			"walkable" : {
+				"main" : [["-1", "455"], ["582", "370"], ["820", "368"], ["819", "502"], ["0", "499"]]
+			},
+			"background" : "/img/rooms/big_door.png",
+			"doors" : [
+				{
+				"isLocked" : "false",
+				"destination" : "diner",
+				"box" : [["300", "400"], ["350", "400"], ["350", "450"], ["300", "450"]]
+			}
+			]
+		},
+		"rembrandt" : {
+			"name" : "rembrandt",
+			"id" : "002",
+			"startPos" : ["37", "426"],
+			"walkable" : {
+				"main" : [["0", "0"], ["684", "0"], ["648", "928"], ["0", "928"]]
+			},
+			"background" : "/img/rooms/rembrandt.jpg",
+			"doors" : [
+				{
+					"isLocked" : "false",
+					"destination" : "diner",
+					"box": [["50", "400"], ["100", "400"], ["100", "450"], ["50", "450"]]
+				}
+			]
+		}
+	}
+}
