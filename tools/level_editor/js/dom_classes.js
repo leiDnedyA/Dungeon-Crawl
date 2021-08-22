@@ -29,8 +29,13 @@ class RoomDOMObject {
 		this.walkableAreaOBJ = new PolygonDOMElement(this.roomOBJ.walkable.main, this.walkableAreaElement, "Walkable Area");
 
 		//door stuff(gets set up more in this.init)
+		this.doorStuffContainer = document.createElement("div");
 		this.doorTableElement = document.createElement("table");
-		this.doorContainerList = [];		
+		this.newDoorButton = document.createElement("button");
+		this.newDoorButton.innerHTML = "New Door";
+		this.doorContainerList = [];
+		this.doorStuffContainer.appendChild(this.doorTableElement);
+		this.doorStuffContainer.appendChild(this.newDoorButton)
 
 		//misc function buttons stuff
 		this.functionsOBJ = new RoomFunctionsOBJ(this, this.engine);
@@ -42,11 +47,14 @@ class RoomDOMObject {
 		this.mainTableContents = {
 			"title" : this.titleElement,
 			"functions" : this.functionsOBJ.getButtonList(),
-			"doors" : this.doorTableElement,
+			"doors" : this.doorStuffContainer,
 			"walkable area" : this.walkableAreaElement,
 			"background" : this.bgLoader.getElementList(),
 		};
 
+		this.refresh = ()=>{
+			this.engine.worldLoader.loadLevel(this.worldOBJ);
+		}
 
 		this.init = ()=>{
 
@@ -62,11 +70,18 @@ class RoomDOMObject {
 			this.doorTableElement.appendChild(headerRow);
 
 			for(let i in this.roomOBJ.doors){
-				let doorContainer = new DoorDOMObject(this.roomOBJ.doors[i], this.doorTableElement, this.renderer);
+				let doorContainer = new DoorDOMObject(this.roomOBJ.doors[i], this.doorTableElement, this.renderer, this.worldOBJ, this.refresh);
 				this.doorContainerList.push(doorContainer);
 				doorContainer.init();
 			}
 
+
+			//adding onClick to new door button
+			this.newDoorButton.addEventListener("click", ()=>{
+				this.roomOBJ.doors.push(new Door(this.worldOBJ.startRoom));
+				console.log(this.worldOBJ)
+				this.refresh()
+			})
 
 			//loading all elements into main table
 
@@ -106,9 +121,10 @@ class RoomDOMObject {
 }
 
 class DoorDOMObject {
-	constructor(doorOBJ, parentElement, renderer){
+	constructor(doorOBJ, parentElement, renderer, worldOBJ, refresh){
 		this.parentElement = parentElement;
 		this.doorOBJ = doorOBJ;
+		this.worldOBJ = worldOBJ;
 
 		// this.position = this.doorOBJ.position;
 		this.box = this.doorOBJ.box;
@@ -117,8 +133,11 @@ class DoorDOMObject {
 		this.renderer = renderer;
 		// this.size = this.doorOBJ.size;
 
+		this.refresh = refresh; //method for refreshing entire layout after change made
+
 		//creates the DOM element that all of the children elements will work within
 		this.domElement = document.createElement("tr");
+		this.destinationSelectElement = document.createElement("select");
 		this.titleElement = document.createElement("td")
 		/*this.posButtonElement = document.createElement("button");*/
 		this.boxElement = document.createElement("td");
@@ -131,8 +150,24 @@ class DoorDOMObject {
 
 			//setting up parts of DOM element
 			
-			this.titleElement.innerHTML = `<i>${this.destination}</i>`;
+			this.titleElement.appendChild(this.destinationSelectElement);
+
+			let roomList = Object.keys(this.worldOBJ.rooms);
+
+			for(let i in roomList){
+				// console.log(roomList[i])
+				let roomOption = document.createElement("option");
+				roomOption.innerHTML = roomList[i];
+				this.destinationSelectElement.appendChild(roomOption)
+			}
 			
+			this.destinationSelectElement.value = this.doorOBJ.destination;
+
+			this.destinationSelectElement.addEventListener("change", ()=>{
+				this.doorOBJ.destination = this.destinationSelectElement.value;
+				this.refresh()
+			})
+
 			/* this.posButtonElement.innerHTML = "set position"; */
 
 

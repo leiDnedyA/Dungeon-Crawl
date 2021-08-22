@@ -25,3 +25,11 @@ class Level {
 
 	}
 }
+
+class Door {
+	constructor(destination, box = [[0, 0]], isLocked = false){
+		this.destination = destination;
+		this.box = box;
+		this.isLocked = isLocked;
+	}
+}
